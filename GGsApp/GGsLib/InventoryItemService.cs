@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GGsLib
 {
-    public class InventoryItemService
+    public class InventoryItemService : IInventoryItemService
     {
         private IInventoryItemRepo repo;
         public InventoryItemService(IInventoryItemRepo repo)

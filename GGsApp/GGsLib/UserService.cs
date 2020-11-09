@@ -5,7 +5,7 @@ using GGsDB.Models;
 
 namespace GGsLib
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private IUserRepo repo;
         public UserService(IUserRepo repo)
@@ -15,7 +15,7 @@ namespace GGsLib
         public void AddUser(User user)
         {
             List<User> allUsers = repo.GetAllUsers();
-            foreach(var u in allUsers)
+            foreach (var u in allUsers)
             {
                 if (u.email.Equals(user.email))
                     throw new Exception("This email already exists.");
@@ -26,7 +26,7 @@ namespace GGsLib
         {
             List<User> allUsers = repo.GetAllUsers();
             if (!allUsers.Contains(user))
-                throw new Exception("This user does not exist and this cannot be deletd.");
+                throw new Exception("This user does not exist and this cannot be deleted.");
             repo.DeleteUser(user);
         }
         public User GetUserByEmail(string email)

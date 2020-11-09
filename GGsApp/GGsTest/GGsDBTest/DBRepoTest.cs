@@ -48,6 +48,12 @@ namespace GGsTest.GGsDBTest
             using var assertContext = new GGsContext(options);
             Assert.NotNull(assertContext.Users.Single(u => u.Name == testUser.name));
         }
-
+        [Fact]
+        public void GetUserShouldGet()
+        {
+            var options = new DbContextOptionsBuilder<GGsContext>().UseInMemoryDatabase("AddUserShouldAdd").Options;
+            using var testContext = new GGsContext(options);
+            repo = new DBRepo(testContext, mapper);
+        }
     }
 }

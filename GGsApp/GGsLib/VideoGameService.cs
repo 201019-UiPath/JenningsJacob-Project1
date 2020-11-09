@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GGsLib
 {
-    public class VideoGameService
+    public class VideoGameService : IVideoGameService
     {
         IVideoGameRepo repo;
         public VideoGameService(IVideoGameRepo repo)

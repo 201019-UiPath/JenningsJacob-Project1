@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GGsLib
 {
-    public class LocationService
+    public class LocationService : ILocationService
     {
         private ILocationRepo repo;
         public LocationService(ILocationRepo repo)

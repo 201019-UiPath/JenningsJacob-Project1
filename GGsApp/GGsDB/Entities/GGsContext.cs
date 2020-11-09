@@ -24,20 +24,20 @@ namespace GGsDB.Entities
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Videogames> Videogames { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        var configuration = new ConfigurationBuilder()
+        //        .SetBasePath(Directory.GetCurrentDirectory())
+        //        .AddJsonFile("appsettings.json")
+        //        .Build();
 
-                var connectionString = configuration.GetConnectionString("GGsDB");
-                optionsBuilder.UseNpgsql(connectionString);
-                optionsBuilder.EnableSensitiveDataLogging();
-            }
-        }
+        //        var connectionString = configuration.GetConnectionString("GGsDB");
+        //        optionsBuilder.UseNpgsql(connectionString);
+        //        optionsBuilder.EnableSensitiveDataLogging();
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

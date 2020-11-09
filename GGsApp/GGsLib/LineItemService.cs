@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GGsLib
 {
-    public class LineItemService
+    public class LineItemService : ILineItemService
     {
         private ILineItemRepo repo;
         public LineItemService(ILineItemRepo repo)

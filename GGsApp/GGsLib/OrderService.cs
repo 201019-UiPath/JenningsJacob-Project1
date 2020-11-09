@@ -5,7 +5,7 @@ using System;
 
 namespace GGsLib
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
         IOrderRepo repo;
         public OrderService(IOrderRepo repo)
@@ -98,7 +98,7 @@ namespace GGsLib
             order.locationId = user.locationId;
             order.orderDate = DateTime.Now;
             AddOrder(order);
-            
+
             // Get that order back with generated id
             Order newOrder = GetOrderByDate(order.orderDate);
             order.id = newOrder.id;
