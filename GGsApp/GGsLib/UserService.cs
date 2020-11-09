@@ -8,7 +8,7 @@ namespace GGsLib
     public class UserService : IUserService
     {
         private IUserRepo repo;
-        public UserService(IUserRepo repo)
+        public UserService(IRepo repo)
         {
             this.repo = repo;
         }
@@ -22,12 +22,18 @@ namespace GGsLib
             }
             repo.AddUser(user);
         }
-        public void DeleteUser(User user)
+        public void DeleteUser(int id)
         {
-            List<User> allUsers = repo.GetAllUsers();
-            if (!allUsers.Contains(user))
-                throw new Exception("This user does not exist and this cannot be deleted.");
-            repo.DeleteUser(user);
+            //List<User> allUsers = repo.GetAllUsers();
+            //if (!allUsers.Contains(user))
+            //    throw new Exception("This user does not exist and thus cannot be deleted.");
+            //User user = GetUserById(id);
+
+            repo.DeleteUser(id);
+        }
+        public List<User> GetAllUsers()
+        {
+            return repo.GetAllUsers();
         }
         public User GetUserByEmail(string email)
         {
@@ -37,9 +43,9 @@ namespace GGsLib
         {
             return repo.GetUserById(id);
         }
-        public User UpdateUser(User user, int id)
+        public void UpdateUser(User user)
         {
-            return repo.UpdateUserLocationId(user, id);
+            repo.UpdateUser(user);
         }
     }
 }

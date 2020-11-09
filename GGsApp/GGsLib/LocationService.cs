@@ -7,7 +7,7 @@ namespace GGsLib
     public class LocationService : ILocationService
     {
         private ILocationRepo repo;
-        public LocationService(ILocationRepo repo)
+        public LocationService(IRepo repo)
         {
             this.repo = repo;
         }

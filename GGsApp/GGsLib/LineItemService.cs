@@ -7,7 +7,7 @@ namespace GGsLib
     public class LineItemService : ILineItemService
     {
         private ILineItemRepo repo;
-        public LineItemService(ILineItemRepo repo)
+        public LineItemService(IRepo repo)
         {
             this.repo = repo;
         }

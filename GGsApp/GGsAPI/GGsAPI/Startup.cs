@@ -33,14 +33,14 @@ namespace GGsAPI
             services.AddControllers();
 
             services.AddDbContext<GGsContext>(options => options.UseNpgsql(Configuration.GetConnectionString("GGsDB")));
+            services.AddScoped<IRepo, DBRepo>();
+            services.AddScoped<IMapper, DBMapper>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IInventoryItemService, InventoryItemService>();
             services.AddScoped<ILineItemService, LineItemService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IVideoGameService, VideoGameService>();
-            services.AddScoped<IMapper, DBMapper>();
-            services.AddScoped<IRepo, DBRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

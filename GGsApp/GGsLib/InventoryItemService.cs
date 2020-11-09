@@ -7,7 +7,7 @@ namespace GGsLib
     public class InventoryItemService : IInventoryItemService
     {
         private IInventoryItemRepo repo;
-        public InventoryItemService(IInventoryItemRepo repo)
+        public InventoryItemService(IRepo repo)
         {
             this.repo = repo;
         }

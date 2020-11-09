@@ -21,14 +21,58 @@ namespace GGsAPI.Controllers
         }
         [HttpGet("get")]
         [Produces("application/json")]
-        public IActionResult GetAllUsers(int id)
+        public IActionResult GetUserByEmail(string email)
         {
             try
             {
-                return Ok(_userService.GetUserById(id));
-            } catch (Exception)
+                return Ok(_userService.GetUserByEmail(email));
+            }
+            catch (Exception)
             {
                 return NotFound();
+            }
+        }
+        [HttpPost("add")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public IActionResult AddUser(User newUser)
+        {
+            try
+            {
+                _userService.AddUser(newUser);
+                return CreatedAtAction("AddUser", newUser);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        // TODO: Figure this out
+        [HttpDelete("delete")]
+        public IActionResult DeleteUser(int id)
+        { 
+            try
+            {
+                _userService.DeleteUser(id);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        [HttpPut("update")]
+        [Consumes("application/json")]
+        public IActionResult UpdateUser(User user)
+        {
+            try
+            {
+                _userService.UpdateUser(user);
+                return Ok();
+            } 
+            catch (Exception e)
+            {
+                return BadRequest();
             }
         }
     }

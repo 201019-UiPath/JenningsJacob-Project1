@@ -1,9 +1,12 @@
 using GGsDB.Entities;
 using GGsDB.Mappers;
 using GGsDB.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GGsDB.Repos
 {
@@ -14,7 +17,7 @@ namespace GGsDB.Repos
     {
         private readonly GGsContext context;
         private readonly IMapper mapper;
-        public DBRepo(GGsContext context, DBMapper mapper)
+        public DBRepo(GGsContext context, IMapper mapper)
         {
             this.context = context;
             this.mapper = mapper;
@@ -33,15 +36,22 @@ namespace GGsDB.Repos
         /// Updates a user in the database
         /// </summary>
         /// <param name="user">Updated user</param>
-        public User UpdateUserLocationId(User user, int id)
+        public void UpdateUser(User user)
         {
-            var entity = context.Users.FirstOrDefault(i => i.Id == user.id);
-            if (entity != null)
-            {
-                entity.Locationid = id;
-                context.SaveChanges();
-            }
-            return mapper.ParseUser(entity);
+            //var entity = context.Users.FirstOrDefault(i => i.Id == user.id);
+            //if (entity != null)
+            //{
+            //    entity.Locationid = id;
+            //    context.SaveChanges();
+            //}
+            //return mapper.ParseUser(entity);
+            var existingUser =context.Users.Single(x => x.Id == user.id);
+            existingUser.Email = user.email;
+            existingUser.Locationid = user.locationId;
+            existingUser.Name = user.name;
+            existingUser.Type = user.type.ToString();
+            context.Entry(existingUser).State = EntityState.Modified;
+            context.SaveChanges();
         }
         /// <summary>
         /// Gets all users from the database
@@ -61,6 +71,8 @@ namespace GGsDB.Repos
             User user = new User();
             user = mapper.ParseUser(context.Users.Single(x => x.Id == id));
             user.location = GetLocationById(user.locationId);
+            user.orders = GetAllOrdersByUserId(user.id);
+            user.cart = new Cart();
             return user;
         }
         /// <summary>
@@ -73,15 +85,18 @@ namespace GGsDB.Repos
             User user = new User();
             user = mapper.ParseUser(context.Users.Single(x => x.Email == email));
             user.location = GetLocationById(user.locationId);
+            user.orders = GetAllOrdersByUserId(user.id);
+            user.cart = new Cart();
             return user;
         }
         /// <summary>
         /// Deletes a user from the database
         /// </summary>
         /// <param name="user">User you wish to delete</param>
-        public void DeleteUser(User user)
+        public void DeleteUser(int id)
         {
-            context.Users.Remove(mapper.ParseUser(user));
+            var entity = context.Users.Single(u => u.Id == id);
+            context.Users.Remove(entity);
             context.SaveChanges();
         }
         #endregion
@@ -234,8 +249,7 @@ namespace GGsDB.Repos
         }
         public List<Order> GetAllOrdersByUserId(int id)
         {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Userid == id).ToList());
-
+            return  mapper.ParseOrder(context.Orders.Where(x => x.Userid == id).ToList());
         }
         public List<Order> GetAllOrdersDateAsc(int userId)
         {

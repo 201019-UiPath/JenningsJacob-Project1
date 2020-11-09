@@ -7,8 +7,8 @@ namespace GGsLib
 {
     public class OrderService : IOrderService
     {
-        IOrderRepo repo;
-        public OrderService(IOrderRepo repo)
+        private IOrderRepo repo;
+        public OrderService(IRepo repo)
         {
             this.repo = repo;
         }

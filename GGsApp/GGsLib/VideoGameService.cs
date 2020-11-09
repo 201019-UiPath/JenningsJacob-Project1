@@ -7,7 +7,7 @@ namespace GGsLib
     public class VideoGameService : IVideoGameService
     {
         IVideoGameRepo repo;
-        public VideoGameService(IVideoGameRepo repo)
+        public VideoGameService(IRepo repo)
         {
             this.repo = repo;
         }
