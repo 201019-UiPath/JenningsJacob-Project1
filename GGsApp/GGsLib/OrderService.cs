@@ -119,7 +119,9 @@ namespace GGsLib
 
                 // Remove item from inventory
                 InventoryItem inventoryItem = inventoryItemService.GetInventoryItem(user.locationId, videoGame.id);
-                inventoryItemService.DiminishInventoryItem(inventoryItem, item.quantity);
+                //inventoryItemService.DiminishInventoryItem(inventoryItem, item.quantity);
+                inventoryItem.quantity -= item.quantity;
+                inventoryItemService.UpdateInventoryItem(inventoryItem);
             }
             // Clear user cart and update order cost
             user.cart.cartItems.Clear();
