@@ -141,9 +141,13 @@ namespace GGsDB.Repos
         }
         public void UpdateLineItem(LineItem item)
         {
-            context.Lineitems.Update(mapper.ParseLineItem(item));
+            var existingItem = context.Lineitems.Single(x => x.Id == item.id);
+            existingItem.Videogameid = item.videoGameId;
+            existingItem.Orderid = item.orderId;
+            existingItem.Quantity = item.quantity;
+            existingItem.Cost = item.cost;
+            context.Entry(existingItem).State = EntityState.Modified;
             context.SaveChanges();
-
         }
         public LineItem GetLineItemByOrderId(int id)
         {
@@ -156,11 +160,11 @@ namespace GGsDB.Repos
             return mapper.ParseLineItem(context.Lineitems.Where(x => x.Orderid == orderId).ToList());
 
         }
-        public void DeleteLineItem(LineItem item)
+        public void DeleteLineItem(int id)
         {
-            context.Lineitems.Remove(mapper.ParseLineItem(item));
+            var entity = context.Lineitems.Single(i => i.Id == id);
+            context.Lineitems.Remove(entity);
             context.SaveChanges();
-
         }
         #endregion
         #region Location Methods

@@ -15,9 +15,9 @@ namespace GGsLib
         {
             repo.AddLineItem(item);
         }
-        public void DeleteLineItem(LineItem item)
+        public void DeleteLineItem(int id)
         {
-            repo.DeleteLineItem(item);
+            repo.DeleteLineItem(id); 
         }
         public List<LineItem> GetAllLineItems(int orderId)
         {
