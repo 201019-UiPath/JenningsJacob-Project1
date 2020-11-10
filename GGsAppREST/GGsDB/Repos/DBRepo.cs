@@ -104,17 +104,51 @@ namespace GGsDB.Repos
             context.Inventoryitems.Add(mapper.ParseInventoryItem(item));
             context.SaveChanges();
         }
-        public void DeleteInventoryItem(int id)
+        public void ReplenishInventoryItem(InventoryItem item, int quantity)
         {
-            var entity = context.Inventoryitems.Single(u => u.Id == id);
-            context.Inventoryitems.Remove(entity);
-            context.SaveChanges();
+            var entity = context.Inventoryitems.FirstOrDefault(i => i.Id == item.id);
+            if (entity != null)
+            {
+                entity.Quantity += quantity;
+                // context.Inventoryitems.Update(mapper.ParseInventoryItem(item));
+                context.SaveChanges();
+            }
+        }
+        public void DiminishInventoryItem(InventoryItem item, int quantity)
+        {
+            var entity = context.Inventoryitems.FirstOrDefault(i => i.Id == item.id);
+            if (entity != null)
+            {
+                entity.Quantity -= quantity;
+                // context.Inventoryitems.Update(mapper.ParseInventoryItem(item));
+                context.SaveChanges();
+            }
 
         }
-        public List<InventoryItem> GetAllInventoryItemsAtLocation(int locId)
+        public InventoryItem GetInventoryItemById(int id)
+        {
+
+            return mapper.ParseInventoryItem(context.Inventoryitems.Single(x => x.Id == id));
+
+        }
+        public List<InventoryItem> GetAllInventoryItemById(int id)
+        {
+
+            return mapper.ParseInventoryItem(context.Inventoryitems
+            .Where(x => x.Id == id)
+            .OrderBy(x => x.Id)
+            .ToList());
+
+        }
+        public InventoryItem GetInventoryItemByLocationId(int id)
+        {
+            return mapper.ParseInventoryItem(context.Inventoryitems.Single(x => x.Locationid == id));
+
+        }
+        public List<InventoryItem> GetAllInventoryItemByLocationId(int id)
         {
             return mapper.ParseInventoryItem(context.Inventoryitems
-            .Where(x => x.Locationid == locId)
+            .Where(x => x.Locationid == id)
             .OrderBy(x => x.Id).
             ToList());
 
@@ -125,14 +159,11 @@ namespace GGsDB.Repos
             return mapper.ParseInventoryItem(context.Inventoryitems.Single(x => x.Locationid == locId && x.Videogameid == vgId));
 
         }
-        public void UpdateInventoryItem(InventoryItem item)
+        public void DeleteInventoryItem(InventoryItem item)
         {
-            var existingItem = context.Inventoryitems.Single(x => x.Id == item.id);
-            existingItem.Videogameid = item.videoGameId;
-            existingItem.Locationid = item.locationId;
-            existingItem.Quantity = item.quantity;
-            context.Entry(existingItem).State = EntityState.Modified;
+            context.Inventoryitems.Remove(mapper.ParseInventoryItem(item));
             context.SaveChanges();
+
         }
         #endregion
         #region Line Item Methods

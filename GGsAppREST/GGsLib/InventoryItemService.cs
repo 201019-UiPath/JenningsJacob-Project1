@@ -15,21 +15,37 @@ namespace GGsLib
         {
             repo.AddInventoryItem(item);
         }
-        public void DeleteInventoryItem(int id)
+        public void DeleteInventoryItem(InventoryItem item)
         {
-            repo.DeleteInventoryItem(id);
+            repo.DeleteInventoryItem(item);
         }
-        public List<InventoryItem> GetAllInventoryItemsAtLocation(int locationId)
+        public List<InventoryItem> GetAllInventoryItemById(int id)
         {
-            return repo.GetAllInventoryItemsAtLocation(locationId);
+            return repo.GetAllInventoryItemById(id);
         }
-        public InventoryItem GetInventoryItem(int locationId, int videoGameId)
+        public List<InventoryItem> GetAllInventoryItemByLocationId(int id)
         {
-            return repo.GetInventoryItem(locationId, videoGameId);
+            return repo.GetAllInventoryItemByLocationId(id);
         }
-        public void UpdateInventoryItem(InventoryItem item)
+        public InventoryItem GetInventoryItemById(int id)
         {
-            repo.UpdateInventoryItem(item);
+            return repo.GetInventoryItemById(id);
+        }
+        public InventoryItem GetInventoryItemByLocationId(int id)
+        {
+            return repo.GetInventoryItemByLocationId(id);
+        }
+        public InventoryItem GetInventoryItem(int locId, int vgId)
+        {
+            return repo.GetInventoryItem(locId, vgId);
+        }
+        public void DiminishInventoryItem(InventoryItem item, int quantity)
+        {
+            repo.DiminishInventoryItem(item, quantity);
+        }
+        public void ReplenishInventoryItem(InventoryItem item, int quantity)
+        {
+            repo.ReplenishInventoryItem(item, quantity);
         }
     }
 }
