@@ -223,6 +223,10 @@ namespace GGsDB.Entities
                     .HasColumnName("email")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Password)
+                    .HasColumnName("password")
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.Locationid).HasColumnName("locationid");
 
                 entity.Property(e => e.Name)

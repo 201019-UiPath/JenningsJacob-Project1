@@ -176,25 +176,35 @@ namespace GGsDB.Repos
         }
         public void UpdateLocation(Location location)
         {
-            context.Locations.Update(mapper.ParseLocation(location));
+            var existingLocation = context.Locations.Single(x => x.Id == location.id);
+            existingLocation.Street = location.street;
+            existingLocation.City = location.city;
+            existingLocation.State = location.state;
+            existingLocation.Zipcode = location.zipCode;
+            context.Entry(existingLocation).State = EntityState.Modified;
             context.SaveChanges();
-
         }
         public Location GetLocationById(int id)
         {
-            return mapper.ParseLocation(context.Locations.Single(x => x.Id == id));
-
+            Location location = mapper.ParseLocation(context.Locations.Single(x => x.Id == id));
+            location.inventory = GetAllInventoryItemsAtLocation(location.id);
+            return location;
         }
         public List<Location> GetAllLocations()
-        {
-            return mapper.ParseLocation(context.Locations.Select(x => x).ToList());
+        {   
+            List<Location> allLocations = mapper.ParseLocation(context.Locations.Select(x => x).ToList());
+            foreach(var location in allLocations)
+            {
+                location.inventory = GetAllInventoryItemsAtLocation(location.id);
+            }
+            return allLocations;
 
         }
-        public void DeleteLocation(Location location)
+        public void DeleteLocation(int id)
         {
-            context.Locations.Remove(mapper.ParseLocation(location));
+            var entity = context.Locations.Single(i => i.Id == id);
+            context.Locations.Remove(entity);
             context.SaveChanges();
-
         }
         #endregion
         #region Order Methods
@@ -206,93 +216,41 @@ namespace GGsDB.Repos
         }
         public void DeleteOrder(Order order)
         {
-            context.Orders.Remove(mapper.ParseOrder(order));
+            var entity = context.Orders.Single(u => u.Id == order.id);
+            context.Orders.Remove(entity);
             context.SaveChanges();
+        }
+        public List<Order> GetAllOrdersByLocationId(int locationId)
+        {
+            return mapper.ParseOrder(context.Orders
+                .Include("Lineitems")
+                .Where(x => x.Locationid == locationId)
+                .ToList());
 
         }
-        public List<Order> GetAllOrdersByLocationId(int id)
+        public List<Order> GetAllOrdersByUserId(int userId)
         {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Locationid == id).ToList());
-
-        }
-        public List<Order> GetAllOrdersByUserId(int id)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Userid == id).ToList());
-        }
-        public List<Order> GetAllOrdersDateAsc(int userId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Userid == userId).OrderBy(x => x.Orderdate).ToList());
-
-        }
-        public List<Order> GetAllOrdersDateDesc(int userId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Userid == userId).OrderByDescending(x => x.Orderdate).ToList());
-
-        }
-        public List<Order> GetAllOrdersPriceAsc(int userId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Userid == userId).OrderBy(x => x.Totalcost).ToList());
-
-        }
-        public List<Order> GetAllOrdersPriceDesc(int userId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Userid == userId).OrderByDescending(x => x.Totalcost).ToList());
-
-        }
-        public List<Order> GetAllLocationOrdersDateAsc(int locationId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Locationid == locationId).OrderBy(x => x.Orderdate).ToList());
-
-        }
-
-        public List<Order> GetAllLocationOrdersDateDesc(int locationId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Locationid == locationId).OrderByDescending(x => x.Orderdate).ToList());
-
-        }
-
-        public List<Order> GetAllLocationOrdersPriceAsc(int locationId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Locationid == locationId).OrderBy(x => x.Totalcost).ToList());
-
-        }
-
-        public List<Order> GetAllLocationOrdersPriceDesc(int locationId)
-        {
-            return mapper.ParseOrder(context.Orders.Where(x => x.Locationid == locationId).OrderByDescending(x => x.Totalcost).ToList());
-
+            return mapper.ParseOrder(context.Orders
+                .Include("Lineitems")
+                .Where(x => x.Userid == userId)
+                .ToList());
         }
         public Order GetOrderByDate(DateTime orderDate)
         {
-            return mapper.ParseOrder(context.Orders.Single(x => x.Orderdate == orderDate));
+            return mapper.ParseOrder(context.Orders
+                .Include("Lineitems")
+                .Single(x => x.Orderdate == orderDate));
 
         }
-        public Order GetOrderById(int id)
+        public void UpdateOrder(Order order)
         {
-            return mapper.ParseOrder(context.Orders.Single(x => x.Id == id));
-
-        }
-        public Order GetOrderByLocationId(int id)
-        {
-            return mapper.ParseOrder(context.Orders.Single(x => x.Locationid == id));
-
-        }
-        public Order GetOrderByUserId(int id)
-        {
-            return mapper.ParseOrder(context.Orders.Single(x => x.Userid == id));
-
-        }
-        public Order UpdateOrderCost(Order order, decimal totalCost)
-        {
-
-            var entity = context.Orders.FirstOrDefault(i => i.Id == order.id);
-            if (entity != null)
-            {
-                entity.Totalcost = totalCost;
-                context.SaveChanges();
-            }
-            return mapper.ParseOrder(entity);
-
+            var existingOrder = context.Orders.Single(x => x.Id == order.id);
+            existingOrder.Locationid = order.locationId;
+            existingOrder.Userid = order.userId;
+            existingOrder.Orderdate = order.orderDate;
+            existingOrder.Totalcost = order.totalCost;
+            context.Entry(existingOrder).State = EntityState.Modified;
+            context.SaveChanges();
         }
         #endregion
         #region Video Game Methods

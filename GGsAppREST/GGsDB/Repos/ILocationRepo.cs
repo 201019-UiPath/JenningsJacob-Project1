@@ -6,9 +6,9 @@ namespace GGsDB.Repos
     public interface ILocationRepo
     {
         void AddLocation(Location location);
-        void UpdateLocation(Location location);
+        void DeleteLocation(int id);
         Location GetLocationById(int id);
         List<Location> GetAllLocations();
-        void DeleteLocation(Location location);
+        void UpdateLocation(Location location);
     }
 }

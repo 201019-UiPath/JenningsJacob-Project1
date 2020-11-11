@@ -15,9 +15,9 @@ namespace GGsLib
         {
             repo.AddLocation(location);
         }
-        public void DeleteLocation(Location location)
+        public void DeleteLocation(int id)
         {
-            repo.DeleteLocation(location);
+            repo.DeleteLocation(id);
         }
         public List<Location> GetAllLocations()
         {
