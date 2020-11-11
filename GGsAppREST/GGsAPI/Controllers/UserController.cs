@@ -43,8 +43,8 @@ namespace GGsAPI.Controllers
                 return BadRequest();
             }
         }
-        // TODO: Figure this out
         [HttpDelete("delete")]
+        //[Consumes("application/json")]
         public IActionResult DeleteUser(int id)
         {
             try

@@ -153,7 +153,8 @@ namespace GGsDB.Mappers
                 userId = order.Userid,
                 locationId = order.Locationid,
                 orderDate = order.Orderdate,
-                totalCost = order.Totalcost
+                totalCost = order.Totalcost,
+                lineItems = ParseLineItem(order.Lineitems)
             };
         }
 
@@ -201,7 +202,8 @@ namespace GGsDB.Mappers
                     name = user.Name,
                     email = user.Email,
                     locationId = user.Locationid,
-                    type = User.userType.Customer
+                    type = User.userType.Customer,
+                    password = user.Password
                 };
             else
                 return new User()
@@ -210,7 +212,8 @@ namespace GGsDB.Mappers
                     name = user.Name,
                     email = user.Email,
                     locationId = user.Locationid,
-                    type = User.userType.Manager
+                    type = User.userType.Manager,
+                    password = user.Password
                 };
         }
 
@@ -221,7 +224,8 @@ namespace GGsDB.Mappers
                 Name = user.name,
                 Email = user.email,
                 Locationid = user.locationId,
-                Type = user.type.ToString()
+                Type = user.type.ToString(),
+                Password = user.password
             };
         }
 
@@ -257,7 +261,8 @@ namespace GGsDB.Mappers
                 name = videogame.Name,
                 cost = videogame.Cost,
                 platform = videogame.Platform,
-                esrb = videogame.Esrb
+                esrb = videogame.Esrb,
+                description = videogame.Description
             };
         }
 
@@ -268,7 +273,8 @@ namespace GGsDB.Mappers
                 Name = videogame.name,
                 Cost = videogame.cost,
                 Platform = videogame.platform,
-                Esrb = videogame.esrb
+                Esrb = videogame.esrb,
+                Description = videogame.description
             };
         }
 

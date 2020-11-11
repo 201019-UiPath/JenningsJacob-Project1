@@ -20,65 +20,21 @@ namespace GGsLib
         {
             repo.DeleteOrder(order);
         }
-        public List<Order> GetAllOrdersByLocationId(int id)
+        public List<Order> GetAllOrdersByLocationId(int locationId)
         {
-            return repo.GetAllOrdersByLocationId(id);
+            return repo.GetAllOrdersByLocationId(locationId);
         }
-        public List<Order> GetAllOrdersByUserId(int id)
+        public List<Order> GetAllOrdersByUserId(int userId)
         {
-            return repo.GetAllOrdersByUserId(id);
+            return repo.GetAllOrdersByUserId(userId);
         }
         public Order GetOrderByDate(DateTime date)
         {
             return repo.GetOrderByDate(date);
         }
-        public Order GetOrderById(int id)
+        public void UpdateOrder(Order order)
         {
-            return repo.GetOrderById(id);
-        }
-        public Order GetOrderByLocationId(int id)
-        {
-            return repo.GetOrderByLocationId(id);
-        }
-        public Order GetOrderByUserId(int id)
-        {
-            return repo.GetOrderByUserId(id);
-        }
-        public List<Order> GetAllOrdersDateAsc(int userId)
-        {
-            return repo.GetAllOrdersDateAsc(userId);
-        }
-        public List<Order> GetAllOrdersDateDesc(int userId)
-        {
-            return repo.GetAllOrdersDateDesc(userId);
-        }
-        public List<Order> GetAllOrdersPriceAsc(int userId)
-        {
-            return repo.GetAllOrdersPriceAsc(userId);
-        }
-        public List<Order> GetAllOrdersPriceDesc(int userId)
-        {
-            return repo.GetAllOrdersPriceDesc(userId);
-        }
-        public List<Order> GetAllLocationOrdersDateAsc(int locatoinId)
-        {
-            return repo.GetAllLocationOrdersDateAsc(locatoinId);
-        }
-        public List<Order> GetAllLocationOrdersDateDesc(int locatoinId)
-        {
-            return repo.GetAllLocationOrdersDateDesc(locatoinId);
-        }
-        public List<Order> GetAllLocationOrdersPriceAsc(int locatoinId)
-        {
-            return repo.GetAllLocationOrdersPriceAsc(locatoinId);
-        }
-        public List<Order> GetAllLocationOrdersPriceDesc(int locatoinId)
-        {
-            return repo.GetAllLocationOrdersPriceDesc(locatoinId);
-        }
-        public Order UpdateOrderCost(Order order, decimal totalCost)
-        {
-            return repo.UpdateOrderCost(order, totalCost);
+            repo.UpdateOrder(order);
         }
         /// <summary>
         /// Prepares and completes order while updating appropriate tables in the database
@@ -125,8 +81,8 @@ namespace GGsLib
             }
             // Clear user cart and update order cost
             user.cart.cartItems.Clear();
-            newOrder = UpdateOrderCost(order, totalCost);
-            return newOrder;
+            UpdateOrder(order);
+            return order;
         }
     }
 }
