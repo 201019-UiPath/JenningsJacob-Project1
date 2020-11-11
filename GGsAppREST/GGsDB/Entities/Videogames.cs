@@ -16,6 +16,7 @@ namespace GGsDB.Entities
         public decimal Cost { get; set; }
         public string Platform { get; set; }
         public string Esrb { get; set; }
+        public string Description { get; set; }
         public virtual ICollection<Inventoryitems> Inventoryitems { get; set; }
         public virtual ICollection<Lineitems> Lineitems { get; set; }
     }

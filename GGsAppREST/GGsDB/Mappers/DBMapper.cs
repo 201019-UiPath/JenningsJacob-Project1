@@ -261,7 +261,8 @@ namespace GGsDB.Mappers
                 name = videogame.Name,
                 cost = videogame.Cost,
                 platform = videogame.Platform,
-                esrb = videogame.Esrb
+                esrb = videogame.Esrb,
+                description = videogame.Description
             };
         }
 
@@ -272,7 +273,8 @@ namespace GGsDB.Mappers
                 Name = videogame.name,
                 Cost = videogame.cost,
                 Platform = videogame.platform,
-                Esrb = videogame.esrb
+                Esrb = videogame.esrb,
+                Description = videogame.description
             };
         }
 

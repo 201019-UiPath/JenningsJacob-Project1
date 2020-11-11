@@ -265,6 +265,9 @@ namespace GGsDB.Entities
                     .HasColumnName("platform")
                     .HasMaxLength(6);
 
+                entity.Property(e => e.Description)
+                    .HasColumnName("description");
+
             });
 
             OnModelCreatingPartial(modelBuilder);

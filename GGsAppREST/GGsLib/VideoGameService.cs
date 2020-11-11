@@ -23,13 +23,9 @@ namespace GGsLib
         {
             return repo.GetAllVideoGames();
         }
-        public List<VideoGame> GetAllVideoGameById(int id)
+        public VideoGame GetVideoGameById(int id)
         {
-            return repo.GetAllVideoGamesById(id);
-        }
-        public VideoGame GetVideoGame(int id)
-        {
-            return repo.GetVideoGame(id);
+            return repo.GetVideoGameById(id);
         }
         public void UpdateVideoGame(VideoGame videoGame)
         {

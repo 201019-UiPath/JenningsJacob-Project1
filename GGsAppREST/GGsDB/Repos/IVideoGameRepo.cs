@@ -7,9 +7,8 @@ namespace GGsDB.Repos
     {
         void AddVideoGame(VideoGame videoGame);
         void UpdateVideoGame(VideoGame videoGame);
-        VideoGame GetVideoGame(int id);
+        VideoGame GetVideoGameById(int id);
         List<VideoGame> GetAllVideoGames();
-        List<VideoGame> GetAllVideoGamesById(int id);
         void DeleteVideoGame(VideoGame videoGame);
     }
 }

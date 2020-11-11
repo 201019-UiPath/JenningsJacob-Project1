@@ -262,11 +262,16 @@ namespace GGsDB.Repos
         }
         public void UpdateVideoGame(VideoGame videoGame)
         {
-            context.Update<Videogames>(mapper.ParseVideoGame(videoGame));
+            var existingVideoGame = context.Videogames.Single(x => x.Id == videoGame.id);
+            existingVideoGame.Name = videoGame.name;
+            existingVideoGame.Cost = videoGame.cost;
+            existingVideoGame.Platform = videoGame.platform;
+            existingVideoGame.Esrb = videoGame.esrb;
+            existingVideoGame.Description = videoGame.description;
+            context.Entry(existingVideoGame).State = EntityState.Modified;
             context.SaveChanges();
-
         }
-        public VideoGame GetVideoGame(int id)
+        public VideoGame GetVideoGameById(int id)
         {
             return mapper.ParseVideoGame(context.Videogames.Single(x => x.Id == id));
 
@@ -276,14 +281,10 @@ namespace GGsDB.Repos
             return mapper.ParseVideoGame(context.Videogames.Select(x => x).ToList());
 
         }
-        public List<VideoGame> GetAllVideoGamesById(int id)
-        {
-            return mapper.ParseVideoGame(context.Videogames.Where(x => x.Id == id).ToList());
-
-        }
         public void DeleteVideoGame(VideoGame videoGame)
         {
-            context.Videogames.Remove(mapper.ParseVideoGame(videoGame));
+            var entity = context.Videogames.Single(i => i.Id == videoGame.id);
+            context.Videogames.Remove(entity);
             context.SaveChanges();
         }
         #endregion
