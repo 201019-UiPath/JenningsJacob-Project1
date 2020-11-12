@@ -13,7 +13,8 @@ namespace GGsDB.Mappers
                 id = item.Id,
                 videoGameId = item.Videogameid,
                 locationId = item.Locationid,
-                quantity = item.Quantity
+                quantity = item.Quantity,
+                videoGame = ParseVideoGame(item.Videogame)
             };
         }
 

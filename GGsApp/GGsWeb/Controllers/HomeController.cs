@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using GGsWeb.Models;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
+using System.Diagnostics.Eventing.Reader;
 
 namespace GGsWeb.Controllers
 {
@@ -20,26 +21,21 @@ namespace GGsWeb.Controllers
         {
             _logger = logger;
         }
-
-        public IActionResult Index(string email, string password)
-        {
-            ViewBag.email = email;
-            ViewBag.password = password;
-            return View();
-        }
+        [HttpGet]
         public ViewResult Login()
         {
-            return View();
+            var model = new LoginViewModel();
+            return View(model);
         }
         [HttpPost]
-        public IActionResult Login(User user)
+        public IActionResult Login(LoginViewModel model)
         {
             if(ModelState.IsValid)
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(url);
-                    var response = client.GetAsync($"user/get?email={user.email}");
+                    var response = client.GetAsync($"user/get?email={model.email}");
                     response.Wait();
 
                     var result = response.Result;
@@ -50,26 +46,65 @@ namespace GGsWeb.Controllers
 
                         var verifiedUser = JsonConvert.DeserializeObject<User>(jsonString.Result);
 
-                        if (verifiedUser.password == user.password && verifiedUser.email == user.email)
+                        if (verifiedUser.password == model.password && verifiedUser.email == model.email)
                         {
-                            //HttpContext.Session.Set<User>("CurrentUser", user);
-                            return RedirectToAction("Index", "Customer");
+                            HttpContext.Session.SetObject("User", verifiedUser);
+                            return RedirectToAction("GetInventory", "Customer");
                         }
                         else
                         {
-                            return View(user);
+                            ModelState.AddModelError("Error", "Invalid information");
+                            return View(model);
                         }
                     }
                 }
             }
-            return View(user);
+            return View(model);
         }
-
-        public IActionResult Privacy()
+        [HttpPost]
+        public IActionResult SignUp(SignUpViewModel model)
         {
-            return View();
-        }
+            if (ModelState.IsValid)
+            {
+                if (model.password == model.confirmPassword)
+                {
+                    // Get user information
+                }
+                //using (var client = new HttpClient())
+                //{
+                    //client.BaseAddress = new Uri(url);
+                    //var response = client.GetAsync($"user/get?email={model.email}");
+                    //response.Wait();
 
+                    //var result = response.Result;
+                    //if (result.IsSuccessStatusCode)
+                    //{
+                    //    var jsonString = result.Content.ReadAsStringAsync();
+                    //    jsonString.Wait();
+
+                    //    var verifiedUser = JsonConvert.DeserializeObject<User>(jsonString.Result);
+
+                    //    if (verifiedUser.password == model.password && verifiedUser.email == model.email)
+                    //    {
+                    //        //HttpContext.Session.Set<User>("CurrentUser", user);
+                    //        return RedirectToAction("Index", "Customer");
+                    //    }
+                    //    else
+                    //    {
+                    //        ModelState.AddModelError("Error", "Invalid information");
+                    //        return View(model);
+                    //    }
+                    //}
+                //}
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public ViewResult SignUp()
+        {
+            var model = new SignUpViewModel();
+            return View(model);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

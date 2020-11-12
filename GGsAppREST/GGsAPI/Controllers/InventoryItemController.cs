@@ -22,7 +22,7 @@ namespace GGsAPI.Controllers
             {
                 return Ok(_inventoryItemService.GetAllInventoryItemsAtLocation(locationId));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return NotFound();
             }

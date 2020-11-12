@@ -1,0 +1,42 @@
+﻿@model GGsWeb.Models.SignUpViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@*@if (ViewData.ModelState.IsValid && ViewData.ModelState["Error"].Errors.Count > 0)
+{
+    <div class="alert alert-danger">
+        @ViewData.ModelState["Error"].Errors.First().ErrorMessage
+    </div>
+}*@
+<section id="cover" class="min-vh-100">
+    <div id="cover-caption">
+        <div class="container">
+            <div class="row text-white">
+                <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
+                    <h1 class="display-4 py-2 text-truncate">Welcome to GGs</h1>
+                    <div class="px-2">
+                        <form asp-action="Login" class="justify-content-center">
+                            <div class="form-group">
+                                <label asp-for="email"></label>
+                                <input asp-for="email" type="email" class="form-control shadow-lg" aria-describedby="emailHelp">
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="password"></label>
+                                <input asp-for="password" type="password" class="form-control shadow-lg">
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="confirmPassword"></label>
+                                <input asp-for="confirmPassword" type="password" class="form-control shadow-lg">
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Sign up" class="btn btn-primary shadow-lg">
+                            </div>
+                            <span><small>Already have an account? @Html.ActionLink("Login", "Login", "Home")!</small></span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

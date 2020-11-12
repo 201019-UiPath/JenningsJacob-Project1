@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 
 namespace GGsWeb.Models
 {
@@ -30,6 +31,10 @@ namespace GGsWeb.Models
         {
             Customer,
             Manager
+        }
+        public User()
+        {
+            cart = new Cart();
         }
     }
 }

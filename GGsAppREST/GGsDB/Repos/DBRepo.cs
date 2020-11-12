@@ -113,9 +113,10 @@ namespace GGsDB.Repos
         public List<InventoryItem> GetAllInventoryItemsAtLocation(int locId)
         {
             return mapper.ParseInventoryItem(context.Inventoryitems
-            .Where(x => x.Locationid == locId)
-            .OrderBy(x => x.Id)
-            .ToList());
+                .Include("Videogame")
+                .Where(x => x.Locationid == locId)
+                .OrderBy(x => x.Id)
+                .ToList());
 
         }
         public InventoryItem GetInventoryItem(int locationId, int videoGameId)

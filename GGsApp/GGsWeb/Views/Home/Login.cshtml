@@ -1,4 +1,4 @@
-﻿@model GGsWeb.Models.User
+﻿@model GGsWeb.Models.LoginViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -12,17 +12,17 @@
                     <div class="px-2">
                         <form asp-action="Login" class="justify-content-center">
                             <div class="form-group">
-                                <label asp-for="email">Email address</label>
-                                <input type="email" class="form-control shadow-lg" id="email" aria-describedby="emailHelp">
+                                <label asp-for="email"></label>
+                                <input asp-for="email" type="email" class="form-control shadow-lg" id="email" aria-describedby="emailHelp">
                             </div>
                             <div class="form-group">
-                                <label asp-for="password">Password</label>
-                                <input type="password" class="form-control shadow-lg" id="password">
+                                <label asp-for="password"></label>
+                                <input asp-for="password" type="password" class="form-control shadow-lg" id="password">
                             </div>
                             <div class="form-group">
                                 <input type="submit" value="Sign in" class="btn btn-primary shadow-lg">
                             </div>
-                            <span><small>Don't have an accout? <a href="#">Sign up</a>!</small></span>
+                            <span><small>Don't have an account? @Html.ActionLink("Sign up", "Signup", "Home")!</small></span>
                         </form>
                     </div>
                 </div>
