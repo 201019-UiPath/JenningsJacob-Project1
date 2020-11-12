@@ -4,31 +4,22 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GGsWeb.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace GGsWeb.Controllers
 {
-    public class CustomerController : Controller
+    public class VideoGameController : Controller
     {
         const string url = "https://localhost:44316/";
-        private User user;
-        public IActionResult Index()
+        public IActionResult Details(int id)
         {
-            return View();
-        }
-        public IActionResult GetInventory()
-        {
-            user = HttpContext.Session.GetObject<User>("User");
-            if (user == null)
-                return RedirectToAction("Login", "Home");
             if (ModelState.IsValid)
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(url);
-                    var response = client.GetAsync($"inventoryitem/get/{user.locationId}");
+                    var response = client.GetAsync($"videogame/get?id={id}");
                     response.Wait();
 
                     var result = response.Result;
@@ -37,15 +28,11 @@ namespace GGsWeb.Controllers
                         var jsonString = result.Content.ReadAsStringAsync();
                         jsonString.Wait();
 
-                        var model = JsonConvert.DeserializeObject<List<InventoryItem>>(jsonString.Result);
+                        var model = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
                         return View(model);
                     }
                 }
             }
-            return View();
-        }
-        public IActionResult AddCustomer()
-        {
             return View();
         }
     }
