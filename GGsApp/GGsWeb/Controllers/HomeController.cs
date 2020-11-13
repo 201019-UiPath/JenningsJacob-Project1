@@ -9,6 +9,10 @@ using GGsWeb.Models;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.Diagnostics.Eventing.Reader;
+using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
 
 namespace GGsWeb.Controllers
 {
@@ -54,7 +58,7 @@ namespace GGsWeb.Controllers
                         else
                         {
                             ModelState.AddModelError("Error", "Invalid information");
-                            return View(model);
+                            return View(model); 
                         }
                     }
                 }

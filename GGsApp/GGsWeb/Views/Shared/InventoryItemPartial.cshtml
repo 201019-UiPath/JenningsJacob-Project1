@@ -7,10 +7,18 @@
     <div class="card-body">
         <img src="" alt="" class="card-img-top">
         <h5>@Html.DisplayFor(model => model.name)</h5>
-        <p class="card-text">@Html.DisplayFor(model => model.platform)</p>
-        <p>@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</p>
+            <div class="row">
+                <div class="col">
+                    <p class="card-text text-left">@Html.DisplayFor(model => model.platform)</p>
+                </div>
+                <div class="col">
+                    <p class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</p>
+                </div>
+            </div>
+        
+        
         @*<a href="" class="btn btn-primary">Add to Cart</a>*@
-        <button class="btn btn-primary text-white">@Html.ActionLink("Add To Cart", "AddItemToCart", "Customer", Model)</button>
+        <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", Model)'">Add to Cart</button>
 
     </div>
 </div>

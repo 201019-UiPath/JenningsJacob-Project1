@@ -25,6 +25,12 @@ namespace GGsWeb
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            services.AddAuthentication("CookieAuthentication")
+                .AddCookie("CookieAuthentication", config =>
+                {
+                    config.Cookie.Name = "UserLoginCookie";
+                    config.LoginPath = "/Home/Login";
+                });
 
             services.AddAuthorization();
             services.AddControllersWithViews();
@@ -48,6 +54,8 @@ namespace GGsWeb
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
