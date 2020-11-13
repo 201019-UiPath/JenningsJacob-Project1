@@ -114,5 +114,31 @@ namespace GGsWeb.Controllers
             }
             return RedirectToAction("GetInventory", "Customer");
         }
+        public IActionResult GetOrderHistory()
+        {
+            // Get User
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
+            if (user.type == Models.User.userType.Customer)
+            {
+                // Get order history
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(url);
+                    var response = client.GetAsync($"order/get/user?id={user.id}");
+                    response.Wait();
+
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        var result = response.Result.Content.ReadAsStringAsync();
+                        var model = JsonConvert.DeserializeObject<List<Order>>(result.Result);
+                        return View(model);
+                    }
+                    return RedirectToAction("GetInventory", "Customer");
+                }
+            }
+            return RedirectToAction("GetInventory", "Customer");
+        }
     }
 }
