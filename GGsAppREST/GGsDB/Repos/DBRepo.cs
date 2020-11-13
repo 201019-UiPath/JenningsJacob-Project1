@@ -238,9 +238,33 @@ namespace GGsDB.Repos
         }
         public Order GetOrderByDate(DateTime orderDate)
         {
-            return mapper.ParseOrder(context.Orders
+            Order order = new Order();
+            order = mapper.ParseOrder(context.Orders
                 .Include("Lineitems")
                 .Single(x => x.Orderdate == orderDate));
+            if (order.lineItems != null)
+            {
+                foreach (var item in order.lineItems)
+                {
+                    item.videoGame = GetVideoGameById(item.videoGameId);
+                }
+            }
+            return order;
+        }
+        public Order GetOrderById(int id)
+        {
+            Order order = new Order();
+            order = mapper.ParseOrder(context.Orders
+                .Include("Lineitems")
+                .Single(x => x.Id == id));
+            if (order.lineItems != null)
+            {
+                foreach (var item in order.lineItems)
+                {
+                    item.videoGame = GetVideoGameById(item.videoGameId);
+                }
+            }
+            return order;
 
         }
         public void UpdateOrder(Order order)

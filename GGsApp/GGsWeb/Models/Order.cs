@@ -1,6 +1,7 @@
 ﻿using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GGsWeb.Models
 {
@@ -12,6 +13,7 @@ namespace GGsWeb.Models
         public int locationId { get; set; }
         public Location location { get; set; }
         public DateTime orderDate { get; set; }
+        [DataType(DataType.Currency)]
         public decimal totalCost { get; set; }
         public List<LineItem> lineItems { get; set; }
     }

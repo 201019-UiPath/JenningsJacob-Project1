@@ -57,6 +57,19 @@ namespace GGsAPI.Controllers
                 return NotFound();
             }
         }
+        [HttpGet("get/{orderId}")]
+        [Produces("application/json")]
+        public IActionResult GetOrderById(int orderId)
+        {
+            try
+            {
+                return Ok(_orderService.GetOrderById(orderId));
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
         [HttpPost("add")]
         [Consumes("application/json")]
         public IActionResult AddOrder(Order order)

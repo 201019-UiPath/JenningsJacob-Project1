@@ -15,9 +15,23 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
-        public IActionResult Reciept()
+        public IActionResult Receipt(Order order)
         {
-            return View();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                var response = client.GetAsync($"order/get/{order.id}");
+                response.Wait();
+                
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var result = response.Result.Content.ReadAsStringAsync();
+                    var model = JsonConvert.DeserializeObject<Order>(result.Result);
+                    return View(model);
+                }
+                return RedirectToAction("GetInventory", "Customer");
+            }
+            
         }
         public IActionResult AddOrder(Cart cart)
         {
@@ -94,7 +108,7 @@ namespace GGsWeb.Controllers
                         // Clear cart items and redirect to receipt view
                         user.cart.cartItems.Clear();
                         HttpContext.Session.SetObject("User", user);
-                        return RedirectToAction("GetInventory", "Customer"); // TODO: make receipt view
+                        return RedirectToAction("Receipt", order); // TODO: make receipt view
                     }
                 }
             }
