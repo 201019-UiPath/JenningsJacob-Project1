@@ -32,6 +32,10 @@ namespace GGsLib
         {
             return repo.GetOrderByDate(date);
         }
+        public Order GetOrderById(int id)
+        {
+            return repo.GetOrderById(id);
+        }
         public void UpdateOrder(Order order)
         {
             repo.UpdateOrder(order);

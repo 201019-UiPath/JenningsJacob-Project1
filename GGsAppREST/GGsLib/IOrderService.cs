@@ -11,6 +11,7 @@ namespace GGsLib
         List<Order> GetAllOrdersByLocationId(int locationId);
         List<Order> GetAllOrdersByUserId(int userId);
         Order GetOrderByDate(DateTime date);
+        Order GetOrderById(int id);
         void UpdateOrder(Order order);
         Order MakePurchase(User user, VideoGameService videoGameService, LineItemService lineItemService, InventoryItemService inventoryItemService);
     }
