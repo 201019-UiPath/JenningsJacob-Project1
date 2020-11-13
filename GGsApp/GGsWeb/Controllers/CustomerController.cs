@@ -72,5 +72,9 @@ namespace GGsWeb.Controllers
                 return RedirectToAction("Login", "Home");
             return View(user.cart);
         }
+        public IActionResult AddOrder()
+        {
+            user = HttpContext.Session.GetObject<User>("User");
+        }
     }
 }
