@@ -26,7 +26,9 @@ namespace GGsWeb
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddAuthorization();
             services.AddControllersWithViews();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

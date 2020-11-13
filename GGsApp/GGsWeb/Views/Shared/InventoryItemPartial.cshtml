@@ -1,0 +1,17 @@
+﻿@model GGsWeb.Models.VideoGame
+@{
+    ViewData["Title"] = "CardView";
+}
+<div class="card" style="width: 10rem">
+    <img src="" alt="">
+    <div class="card-body">
+        <img src="" alt="" class="card-img-top">
+        <h5>@Html.DisplayFor(model => model.name)</h5>
+        <p class="card-text">@Html.DisplayFor(model => model.platform)</p>
+        <p>@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</p>
+        @*<a href="" class="btn btn-primary">Add to Cart</a>*@
+        <button class="btn btn-primary text-white">@Html.ActionLink("Add To Cart", "AddItemToCart", "Customer", Model)</button>
+
+    </div>
+</div>
+

@@ -12,8 +12,12 @@ namespace GGsWeb.Controllers
     public class VideoGameController : Controller
     {
         const string url = "https://localhost:44316/";
+        private User user;
         public IActionResult Details(int id)
         {
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
             if (ModelState.IsValid)
             {
                 using (var client = new HttpClient())

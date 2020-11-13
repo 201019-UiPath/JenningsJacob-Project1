@@ -44,9 +44,33 @@ namespace GGsWeb.Controllers
             }
             return View();
         }
+        public IActionResult AddItemToCart(VideoGame videoGame)
+        {
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
+            CartItem item = new CartItem()
+            {
+                videoGameId = videoGame.id,
+                videoGame = videoGame,
+                quantity = 1
+            };
+            user.cart.totalCost += (videoGame.cost * item.quantity);
+            user.cart.cartItems.Add(item);
+            HttpContext.Session.SetObject("User", user);
+            return View("GetInventory", user.location.inventory);
+        }
         public IActionResult AddCustomer()
         {
             return View();
+        }
+
+        public IActionResult ViewCart()
+        {
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
+            return View(user.cart);
         }
     }
 }
