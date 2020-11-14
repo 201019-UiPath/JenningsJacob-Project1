@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GGsWeb.Models
+namespace GGsWeb
 {
     public static class SessionExtensions
     {

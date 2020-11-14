@@ -121,7 +121,9 @@ namespace GGsDB.Repos
         }
         public InventoryItem GetInventoryItem(int locationId, int videoGameId)
         {
-            return mapper.ParseInventoryItem(context.Inventoryitems.Single(x => x.Locationid == locationId && x.Videogameid == videoGameId));
+            return mapper.ParseInventoryItem(context.Inventoryitems
+                .Include("Videogame")
+                .Single(x => x.Locationid == locationId && x.Videogameid == videoGameId));
         }
         public void UpdateInventoryItem(InventoryItem item)
         {

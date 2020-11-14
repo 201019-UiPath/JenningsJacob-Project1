@@ -1,4 +1,4 @@
-﻿@model GGsWeb.Models.VideoGame
+﻿@model GGsWeb.Models.InventoryItem
 @{
     ViewData["Title"] = "CardView";
 }
@@ -6,20 +6,23 @@
     <img src="" alt="">
     <div class="card-body">
         <img src="" alt="" class="card-img-top">
-        <h5>@Html.DisplayFor(model => model.name)</h5>
-            <div class="row">
-                <div class="col">
-                    <p class="card-text text-left">@Html.DisplayFor(model => model.platform)</p>
-                </div>
-                <div class="col">
-                    <p class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</p>
-                </div>
+        <h5>@Model.videoGame.name</h5>
+        <div class="row">
+            <div class="col">
+                <article class="card-text text-left">@Model.videoGame.platform</article>
             </div>
-        
-        
-        @*<a href="" class="btn btn-primary">Add to Cart</a>*@
-        <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", Model)'">Add to Cart</button>
-
+            <div class="col">
+                <article class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</article>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <article class="card-text text-left">
+                    <small>Stock: @Model.quantity</small>
+                </article>
+            </div>
+        </div>
+        <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", new { videoGameId = Model.videoGameId, quantity = 1 } )'">Add to Cart</button>
     </div>
 </div>
 

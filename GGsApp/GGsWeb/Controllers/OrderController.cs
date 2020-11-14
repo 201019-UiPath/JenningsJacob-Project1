@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using GGsWeb.Models;
+﻿using GGsWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using NpgsqlTypes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 
 namespace GGsWeb.Controllers
 {
@@ -23,7 +22,7 @@ namespace GGsWeb.Controllers
                 client.BaseAddress = new Uri(url);
                 var response = client.GetAsync($"order/get/{order.id}");
                 response.Wait();
-                
+
                 if (response.Result.IsSuccessStatusCode)
                 {
                     var result = response.Result.Content.ReadAsStringAsync();
@@ -32,7 +31,7 @@ namespace GGsWeb.Controllers
                 }
                 return RedirectToAction("GetInventory", "Customer");
             }
-            
+
         }
         public IActionResult AddOrder(Cart cart)
         {
@@ -117,8 +116,6 @@ namespace GGsWeb.Controllers
         }
         public IActionResult GetOrderHistory(string sort)
         {
-            //ViewBag.CostSortParm = sort == "cost_asc" ? "cost_asc" : "cost_desc";
-            //ViewBag.DateSortParm = sort == "date_asc" ? "date_asc" : "date_desc";
             ViewBag.SortOptions = new List<SelectListItem>()
             {
                 new SelectListItem { Selected = false, Text = "Price (Lowest to Highest)", Value = ("cost_asc")},
@@ -130,40 +127,40 @@ namespace GGsWeb.Controllers
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
                 return RedirectToAction("Login", "Home");
-            if (user.type == Models.User.userType.Customer)
+            // Get order history
+            using (var client = new HttpClient())
             {
-                // Get order history
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(url);
-                    var response = client.GetAsync($"order/get/user?id={user.id}");
-                    response.Wait();
+                client.BaseAddress = new Uri(url);
 
-                    if (response.Result.IsSuccessStatusCode)
+                // TODO: Change for manager sign in
+                var response = client.GetAsync($"order/get/user?id={user.id}");
+
+                response.Wait();
+
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var result = response.Result.Content.ReadAsStringAsync();
+                    var model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.id);
+                    switch (sort)
                     {
-                        var result = response.Result.Content.ReadAsStringAsync();
-                        var model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.id);
-                        switch (sort)
-                        {
-                            case "cost_asc":
-                                model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.totalCost);
-                                break;
-                            case "cost_desc":
-                                model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderByDescending(x => x.totalCost);
-                                break;
-                            case "date_asc":
-                                model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.orderDate);
-                                break;
-                            case "date_desc":
-                                model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderByDescending(x => x.orderDate);
-                                break;
-                            default:
-                                break;
-                        }
-                        return View(model);
+                        case "cost_asc":
+                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.totalCost);
+                            break;
+                        case "cost_desc":
+                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderByDescending(x => x.totalCost);
+                            break;
+                        case "date_asc":
+                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.orderDate);
+                            break;
+                        case "date_desc":
+                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderByDescending(x => x.orderDate);
+                            break;
+                        default:
+                            break;
                     }
-                    return RedirectToAction("GetInventory", "Customer");
+                    return View(model);
                 }
+                return RedirectToAction("GetInventory", "Customer");
             }
             return RedirectToAction("GetInventory", "Customer");
         }
