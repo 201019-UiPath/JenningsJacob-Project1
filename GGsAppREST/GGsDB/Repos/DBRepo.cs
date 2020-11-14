@@ -237,6 +237,7 @@ namespace GGsDB.Repos
                         item.videoGame = GetVideoGameById(item.videoGameId);
                     }
                 }
+                order.location = GetLocationById(locationId);
             }
             return orders;
         }
@@ -256,6 +257,7 @@ namespace GGsDB.Repos
                         item.videoGame = GetVideoGameById(item.videoGameId);
                     }
                 }
+                order.location = GetLocationById(order.locationId);
             }
             return orders;
         }
@@ -272,6 +274,7 @@ namespace GGsDB.Repos
                     item.videoGame = GetVideoGameById(item.videoGameId);
                 }
             }
+            order.location = GetLocationById(order.locationId);
             return order;
         }
         public Order GetOrderById(int id)
@@ -287,6 +290,7 @@ namespace GGsDB.Repos
                     item.videoGame = GetVideoGameById(item.videoGameId);
                 }
             }
+            order.location = GetLocationById(order.locationId);
             return order;
 
         }

@@ -1,7 +1,31 @@
-﻿
+﻿@model IEnumerable<GGsWeb.Models.Order>
 @{
     ViewData["Title"] = "GetOrderHistory";
 }
+<div class="row justify-content-center">
+    <div class="col">
+        <h1>Order History</h1>
+    </div>
+    <div class="col justify-content-center">
+        <span class="float-right align-middle">
+            @Html.DropDownList("SortOrder", (IEnumerable<SelectListItem>)ViewBag.SortOptions, "Select Sorting Option", new { @onchange = "updateSort(this.value)" })
+        </span>
+    </div>
+</div>
 
-<h1>GetOrderHistory</h1>
+<hr />
 
+@foreach (var order in Model)
+{
+    <div class="container" style="margin-bottom: 8px">
+        @Html.Partial("OrderPartial", order)
+    </div>
+    
+}
+
+
+<script>
+    function updateSort(val) {
+        window.location.href = "/Order/GetOrderHistory?sort=" + val;
+    }
+</script>

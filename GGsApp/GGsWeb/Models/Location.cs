@@ -10,5 +10,10 @@ namespace GGsWeb.Models
         public string state { get; set; }
         public string zipCode { get; set; }
         public List<InventoryItem> inventory { get; set; }
+        public string GetLocation()
+        {
+            return $"{street}, {city}, {state}, {zipCode} ";
+        }
+
     }
 }
