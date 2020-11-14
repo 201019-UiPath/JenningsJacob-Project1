@@ -132,6 +132,13 @@ namespace GGsWeb.Controllers
             
             return View(model);
         }
+        public IActionResult SignOut()
+        {
+            // Clear session data and redirect to login page
+            HttpContext.Session.Clear();
+
+            return View("Login");
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
