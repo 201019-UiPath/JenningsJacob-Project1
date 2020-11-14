@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using NpgsqlTypes;
 
@@ -90,17 +91,11 @@ namespace GGsWeb.Controllers
                 videoGame = videoGame,
                 quantity = 1
             };
-            //user.cart.cartItems.Remove(item);
             user.cart.cartItems.RemoveAll(x => x.videoGameId == item.videoGameId);
             user.cart.totalCost -= (videoGame.cost * item.quantity);
             HttpContext.Session.SetObject("User", user);
             return RedirectToAction("GetCart");
         }
-        public IActionResult AddCustomer()
-        {
-            return View();
-        }
-
         public IActionResult GetCart()
         {
             user = HttpContext.Session.GetObject<User>("User");
@@ -108,6 +103,63 @@ namespace GGsWeb.Controllers
                 return RedirectToAction("Login", "Home");
             return View(user.cart);
         }
-        
+        [HttpGet]
+        public IActionResult EditUser()
+        {
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                var response = client.GetAsync("location/getAll");
+                response.Wait();
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var jsonString = result.Content.ReadAsStringAsync();
+                    jsonString.Wait();
+                    var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
+                    var locationOptions = new List<SelectListItem>();
+                    foreach (var l in locations)
+                    {
+                        locationOptions.Add(new SelectListItem { Selected = false, Text = $"{l.city}, {l.state}", Value = l.id.ToString() });
+                    }
+                    ViewBag.locationOptions = locationOptions;
+                }
+            }
+            return View(user);
+        }
+        [HttpPost]
+        public IActionResult EditUser(User newUser)
+        {
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
+
+            // Map newUser values
+            // User decided not to update password, keep it the same
+            if (newUser.password == null)
+                newUser.password = user.password;
+            newUser.location = user.location;
+            newUser.orders = user.orders;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                var json = JsonConvert.SerializeObject(newUser);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = client.PutAsync("user/update", data);
+                response.Wait();
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    // Successfully edited user
+                    HttpContext.Session.SetObject("User", newUser);
+                    return View(newUser);
+                }
+            }
+            return View("GetInventory");
+        }
     }
 }
