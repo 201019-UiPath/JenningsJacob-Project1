@@ -48,18 +48,33 @@ namespace GGsWeb.Controllers
             }
             return View();
         }
-        public IActionResult AddItemToCart(VideoGame videoGame)
+        public IActionResult AddItemToCart(int videoGameId, int quantity)
         {
+            VideoGame videoGame = new VideoGame();
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
                 return RedirectToAction("Login", "Home");
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                var response = client.GetAsync($"videogame/get?id={videoGameId}");
+                response.Wait();
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var jsonString = result.Content.ReadAsStringAsync();
+                    jsonString.Wait();
+                    var vg = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
+                    videoGame = vg;
+                }
+            }
             CartItem item = new CartItem()
             {
-                videoGameId = videoGame.id,
+                videoGameId = videoGameId,
                 videoGame = videoGame,
-                quantity = 1
+                quantity = quantity
             };
-            user.cart.totalCost += (videoGame.cost * item.quantity);
+            user.cart.totalCost += (videoGame.cost * quantity);
             user.cart.cartItems.Add(item);
             HttpContext.Session.SetObject("User", user);
             return View("GetInventory", user.location.inventory);
@@ -79,7 +94,7 @@ namespace GGsWeb.Controllers
             user.cart.cartItems.RemoveAll(x => x.videoGameId == item.videoGameId);
             user.cart.totalCost -= (videoGame.cost * item.quantity);
             HttpContext.Session.SetObject("User", user);
-            return RedirectToAction("ViewCart");
+            return RedirectToAction("GetCart");
         }
         public IActionResult AddCustomer()
         {
