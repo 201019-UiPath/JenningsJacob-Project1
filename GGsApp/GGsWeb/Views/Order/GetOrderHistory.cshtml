@@ -1,5 +1,13 @@
 ﻿@model IEnumerable<GGsWeb.Models.Order>
+@using Microsoft.AspNetCore.Http;
+@using GGsWeb.Models;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
+    User user = new User();
+    if (HttpContextAccessor.HttpContext.Session.GetObject<User>("User") != null)
+    {
+        user = HttpContextAccessor.HttpContext.Session.GetObject<User>("User");
+    }
     ViewData["Title"] = "GetOrderHistory";
 }
 
@@ -7,26 +15,36 @@
     <div class="col">
         <h1>Order History</h1>
     </div>
+    @if (user.type == GGsWeb.Models.User.userType.Manager)
+    {
+        <div class="btn-group justify-content-center mx-auto">
+            @foreach (var l in ViewBag.Locations)
+            {
+                <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("GetOrderHistory", "Order", new { sort = "cost_asc", locationId = l.id })'">@l.city</button>
+            }
+        </div>
+    }
     <div class="col justify-content-center">
         <span class="float-right align-middle">
             @Html.DropDownList("SortOrder", (IEnumerable<SelectListItem>)ViewBag.SortOptions, "Select Sorting Option", new { @onchange = "updateSort(this.value)" })
         </span>
     </div>
 </div>
-
-<hr />
+<hr/>
 
 @foreach (var order in Model)
 {
     <div class="container" style="margin-bottom: 8px">
         @Html.Partial("OrderPartial", order)
     </div>
-
 }
-
-
 <script>
     function updateSort(val) {
-        window.location.href = "/Order/GetOrderHistory?sort=" + val;
-    }
+        window.location.href = "/Order/GetOrderHistory?sort=" + val + "&locationId=" + @user.locationId;
+        }
 </script>
+
+
+
+
+

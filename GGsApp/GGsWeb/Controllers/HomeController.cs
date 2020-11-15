@@ -48,7 +48,10 @@ namespace GGsWeb.Controllers
                         if (verifiedUser.password == model.password && verifiedUser.email == model.email)
                         {
                             HttpContext.Session.SetObject("User", verifiedUser);
-                            return RedirectToAction("GetInventory", "Customer");
+                            if (verifiedUser.type == Models.User.userType.Customer)
+                                return RedirectToAction("GetInventory", "Customer");
+                            else
+                                return RedirectToAction("GetInventory", "Manager", new { locationId = 1 });
                         }
                         else
                         {

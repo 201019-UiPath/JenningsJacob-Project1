@@ -9,6 +9,7 @@ namespace GGsLib
         void DeleteVideoGame(VideoGame videoGame);
         List<VideoGame> GetAllVideoGames();
         VideoGame GetVideoGameById(int id);
+        VideoGame GetVideoGameByName(string name);
         void UpdateVideoGame(VideoGame videoGame);
     }
 }

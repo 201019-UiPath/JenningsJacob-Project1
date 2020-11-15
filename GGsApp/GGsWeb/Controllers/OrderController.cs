@@ -114,7 +114,7 @@ namespace GGsWeb.Controllers
             }
             return RedirectToAction("GetInventory", "Customer");
         }
-        public IActionResult GetOrderHistory(string sort)
+        public IActionResult GetOrderHistory(string sort, int locationId)
         {
             ViewBag.SortOptions = new List<SelectListItem>()
             {
@@ -123,6 +123,7 @@ namespace GGsWeb.Controllers
                 new SelectListItem { Selected = false, Text = "Date (Lowest to Highest)", Value = ("date_asc")},
                 new SelectListItem { Selected = false, Text = "Date (Highest to Lowest)", Value = ("date_asc")}
             };
+            ViewBag.Locations = new List<Location>();
             // Get User
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
@@ -131,38 +132,55 @@ namespace GGsWeb.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(url);
+                string apiCall = "";
 
-                // TODO: Change for manager sign in
-                var response = client.GetAsync($"order/get/user?id={user.id}");
-
-                response.Wait();
-
-                if (response.Result.IsSuccessStatusCode)
+                if (user.type == Models.User.userType.Customer)
+                    apiCall = $"order/get/user?id={user.id}";                    
+                else
                 {
-                    var result = response.Result.Content.ReadAsStringAsync();
-                    var model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.id);
+                    user.locationId = locationId;
+                    HttpContext.Session.SetObject("User", user); // work around for url routing. When changing sort order as manager, match locationID
+                    apiCall = $"order/get/location?id={locationId}";
+                }
+                
+                var response = client.GetAsync(apiCall);
+                response.Wait();
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = response.Result.Content.ReadAsStringAsync();
+                    var model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.id);
                     switch (sort)
                     {
                         case "cost_asc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.totalCost);
+                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.totalCost);
                             break;
                         case "cost_desc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderByDescending(x => x.totalCost);
+                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderByDescending(x => x.totalCost);
                             break;
                         case "date_asc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderBy(x => x.orderDate);
+                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.orderDate);
                             break;
                         case "date_desc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(result.Result).OrderByDescending(x => x.orderDate);
+                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderByDescending(x => x.orderDate);
                             break;
                         default:
                             break;
+                    }
+                    response = client.GetAsync("location/getAll");
+                    response.Wait();
+                    result = response.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var jsonString = result.Content.ReadAsStringAsync();
+                        jsonString.Wait();
+                        var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
+                        ViewBag.Locations = locations;
                     }
                     return View(model);
                 }
                 return RedirectToAction("GetInventory", "Customer");
             }
-            return RedirectToAction("GetInventory", "Customer");
         }
     }
 }

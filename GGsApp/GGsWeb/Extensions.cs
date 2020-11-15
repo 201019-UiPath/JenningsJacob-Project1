@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GGsWeb.Models;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GGsWeb
 {
-    public static class SessionExtensions
+    public static class Extensions
     {
         public static void SetObject(this ISession session, string key, object value)
         {

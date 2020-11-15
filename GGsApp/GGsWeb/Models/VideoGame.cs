@@ -8,6 +8,7 @@ namespace GGsWeb.Models
         public int id { get; set; }
         public string name { get; set; }
         [DataType(DataType.Currency)]
+        [DisplayName("Cost")]
         public decimal cost { get; set; }
         [DisplayName("Platform")]
         public string platform { get; set; }

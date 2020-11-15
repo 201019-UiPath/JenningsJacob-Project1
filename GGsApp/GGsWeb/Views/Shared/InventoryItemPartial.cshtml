@@ -1,28 +1,65 @@
 ﻿@model GGsWeb.Models.InventoryItem
+@using Microsoft.AspNetCore.Http;
+@using GGsWeb.Models;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
+    User user = new User();
+    if (HttpContextAccessor.HttpContext.Session.GetObject<User>("User") != null)
+    {
+        user = HttpContextAccessor.HttpContext.Session.GetObject<User>("User");
+    }
     ViewData["Title"] = "CardView";
 }
-<div class="card" style="width: 10rem">
-    <img src="" alt="">
-    <div class="card-body">
-        <img src="" alt="" class="card-img-top">
-        <h5>@Model.videoGame.name</h5>
-        <div class="row">
-            <div class="col">
-                <article class="card-text text-left">@Model.videoGame.platform</article>
-            </div>
-            <div class="col">
-                <article class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</article>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <article class="card-text text-left">
-                    <small>Stock: @Model.quantity</small>
-                </article>
-            </div>
-        </div>
-        <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", new { videoGameId = Model.videoGameId, quantity = 1 } )'">Add to Cart</button>
-    </div>
-</div>
 
+@if (user.type == GGsWeb.Models.User.userType.Customer)
+{
+    <div class="card" style="width: 10rem">
+        <img src="" alt="">
+        <div class="card-body">
+            <img src="" alt="" class="card-img-top">
+            <h5>@Model.videoGame.name</h5>
+            <div class="row">
+                <div class="col">
+                    <article class="card-text text-left">@Model.videoGame.platform</article>
+                </div>
+                <div class="col">
+                    <article class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</article>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <article class="card-text text-left">
+                        <small>Stock: @Model.quantity</small>
+                    </article>
+                </div>
+            </div>
+            <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", new { videoGameId = Model.videoGameId, quantity = 1 })'">Add to Cart</button>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card" style="width: 10rem">
+        <img src="" alt="">
+        <div class="card-body">
+            <img src="" alt="" class="card-img-top">
+            <h5>@Model.videoGame.name</h5>
+            <div class="row">
+                <div class="col">
+                    <article class="card-text text-left">@Model.videoGame.platform</article>
+                </div>
+                <div class="col">
+                    <article class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</article>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <article class="card-text text-left">
+                        <small>Stock: @Model.quantity</small>
+                    </article>
+                </div>
+            </div>
+            <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("EditInventoryItem", "Manager", new { locationId = Model.locationId, videoGameId = Model.videoGameId })'">Manage Stock</button>
+        </div>
+    </div>
+}

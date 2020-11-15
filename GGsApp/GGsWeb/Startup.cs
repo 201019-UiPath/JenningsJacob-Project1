@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,7 +32,7 @@ namespace GGsWeb
                     config.Cookie.Name = "UserLoginCookie";
                     config.LoginPath = "/Home/Login";
                 });
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthorization();
             services.AddControllersWithViews();
 

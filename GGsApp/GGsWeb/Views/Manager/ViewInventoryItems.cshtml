@@ -1,0 +1,39 @@
+﻿@model IEnumerable<GiantBomb.Api.Model.Game>
+@{
+    ViewData["Title"] = "AddInventoryItem";
+}
+
+
+<div>
+<h1>Add Inventory Item</h1>
+    <div class="row justify-content-center">
+        <form asp-action="ViewInventoryItems" method="get">
+            <p>
+                <input type="text" name="searchString" class="form-control col" placeholder="Enter Video Game Name" />
+                <input type="submit" class="btn btn-primary col" value="Search" />
+            </p>
+        </form>
+    </div>
+    <div class="row justify-content-center">
+        <table class="table col-6">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@Html.ActionLink("Select", "AddInventoryItem", "Manager", new { name = item.Name})</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
