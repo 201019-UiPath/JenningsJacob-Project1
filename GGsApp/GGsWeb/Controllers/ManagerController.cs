@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace GGsWeb.Controllers
 {
@@ -22,11 +23,20 @@ namespace GGsWeb.Controllers
         {
             config = configuration;
         }
+
+        /// <summary>
+        /// Gets inventory for manager
+        /// </summary>
+        /// <param name="locationId">ID of the location whose inventory you wan to see</param>
+        /// <returns>GetInventory View</returns>
         public IActionResult GetInventory(int locationId)
         {
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
+            }
             if (ModelState.IsValid)
             { 
                 using (var client = new HttpClient())
@@ -43,6 +53,7 @@ namespace GGsWeb.Controllers
                         jsonString.Wait();
                         var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
                         var locationOptions = new List<SelectListItem>();
+                        Log.Information("Successfully got locations");
                         foreach (var l in locations)
                         {
                             locationOptions.Add(new SelectListItem { Selected = false, Text = $"{l.city}, {l.state}", Value = l.id.ToString() });
@@ -59,14 +70,22 @@ namespace GGsWeb.Controllers
                     {
                         var jsonString = result.Content.ReadAsStringAsync();
                         jsonString.Wait();
-
+                        Log.Information($"Successfully got inventory for location: {locationId}");
                         var model = JsonConvert.DeserializeObject<List<InventoryItem>>(jsonString.Result);
                         return View(model);
                     }
                 }
             }
+            Log.Error("ModelState is invalid for Manager/GetInventory");
             return View();
         }
+
+        /// <summary>
+        /// Gets the view for the manager to edit inventory item
+        /// </summary>
+        /// <param name="locationId">LocationID of the inventory item</param>
+        /// <param name="videoGameId">VideoGameID of the inventory item</param>
+        /// <returns>EditInventoryItem View</returns>
         [HttpGet]
         public IActionResult EditInventoryItem(int locationId, int videoGameId)
         {
@@ -85,18 +104,29 @@ namespace GGsWeb.Controllers
                         jsonString.Wait();
 
                         var model = JsonConvert.DeserializeObject<InventoryItem>(jsonString.Result);
+                        Log.Information($"Successfully got inventory item: {locationId} - {videoGameId}");
                         return View(model);
                     }
                 }
             }
+            Log.Error("ModelState is invalid for Manager/EditInventoryItem");
             return View();
         }
+
+        /// <summary>
+        /// Updates inventory item in the database
+        /// </summary>
+        /// <param name="item">Update Inventory Item</param>
+        /// <returns>Get Inventory View</returns>
         [HttpPost]
         public IActionResult EditInventoryItem(InventoryItem item)
         {
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
+            }
             if (ModelState.IsValid)
             {
                 using (var client = new HttpClient())
@@ -110,12 +140,22 @@ namespace GGsWeb.Controllers
                     if (result.IsSuccessStatusCode)
                     {
                         // TODO: Give Confirmation 
+
+                        Log.Information($"Successfully updated inventory item: {json}");
                         return RedirectToAction("GetInventory", new { locationId = 1 });
                     }
+                    Log.Error($"Unsuccessfully updated inventory item: {json}");
                 }
             }
+            Log.Error("ModelState is not valid for Manager/EditInventoryItem");
             return RedirectToAction("GetInventory", new { locationId = 1 });
         }
+
+        /// <summary>
+        /// Gets inventory item options using GiantBombAPI
+        /// </summary>
+        /// <param name="searchString">the name of the video game you are searching</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult ViewInventoryItems(string searchString)
         {
@@ -125,10 +165,18 @@ namespace GGsWeb.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 var results = giantBomb.SearchForAllGames(searchString);
+                Log.Information("Successfully got inventory items");
                 return View(results);
             }
             return View(new List<GiantBomb.Api.Model.Game>());
         }
+
+        /// <summary>
+        /// Gets the aadd inventory item view
+        /// </summary>
+        /// <param name="name">The name of the video game you want to add</param>
+        /// <param name="id">the GiantBombAPI id of the video game you want to add</param>
+        /// <returns>AddInventoryItemView</returns>
         [HttpGet]
         public IActionResult AddInventoryItem(string name, int id)
         {
@@ -143,6 +191,7 @@ namespace GGsWeb.Controllers
                 var giantBomb = new GiantBombRestClient(apikey);
                 var game = giantBomb.GetGame(id);
                 model.imageURL = game.Image.SmallUrl;
+                model.description = game.Description;
 
                 // Get Locations
                 using (var client = new HttpClient())
@@ -173,7 +222,10 @@ namespace GGsWeb.Controllers
         {
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
+            }
             // Create Video game
             VideoGame newVideoGame = new VideoGame();
             newVideoGame.name = model.name;
@@ -221,12 +273,12 @@ namespace GGsWeb.Controllers
                         {
                             // Successfully added inventory item
                             // TODO: add confirmation message
-                            return RedirectToAction("GetInventory", new { locationId = user.locationId });
+                            return RedirectToAction("GetInventory", "Manager", new { locationId = user.locationId });
                         }
                     }
                 }
                 // Failed
-                return RedirectToAction("GetInventory", user.locationId);
+                return RedirectToAction("GetInventory", "Manager", user.locationId);
             }
         }
     }

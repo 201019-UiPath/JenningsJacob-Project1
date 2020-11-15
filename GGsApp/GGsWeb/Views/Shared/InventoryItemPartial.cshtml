@@ -21,7 +21,7 @@
                 <article class="card-text text-left">@Model.videoGame.platform</article>
             </div>
             <div class="col">
-                <article class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.id })</article>
+                <article class="text-right">@Html.ActionLink("Details", "Details", "VideoGame", new { id = Model.videoGameId })</article>
             </div>
         </div>
         <div class="row">
@@ -31,14 +31,17 @@
                 </article>
             </div>
         </div>
-            @if (user.type == GGsWeb.Models.User.userType.Customer)
-            {
-                <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", new { videoGameId = Model.videoGameId, quantity = 1 })'">Add to Cart</button>
-            }
-            else
-            {
-                <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("EditInventoryItem", "Manager", new { locationId = Model.locationId, videoGameId = Model.videoGameId })'">Manage Stock</button>
-            }
-        
+        <div class="row">
+            <div class="col">
+                @if (user.type == GGsWeb.Models.User.userType.Customer)
+                {
+                    <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("AddItemToCart", "Customer", new { videoGameId = Model.videoGameId, quantity = 1 })'">Add to Cart</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary text-white float-right" onclick="location.href='@Url.Action("EditInventoryItem", "Manager", new { locationId = Model.locationId, videoGameId = Model.videoGameId })'">Manage Stock</button>
+                }
+            </div>
+        </div>
     </div>
 </div>

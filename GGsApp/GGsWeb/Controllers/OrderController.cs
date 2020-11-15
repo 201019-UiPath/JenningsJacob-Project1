@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using NpgsqlTypes;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,31 +16,52 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
+
+        /// <summary>
+        /// Generates the receipt of the order placed
+        /// </summary>
+        /// <param name="order">the order for receipt</param>
+        /// <returns>ReceiptView</returns>
         public IActionResult Receipt(Order order)
         {
-            using (var client = new HttpClient())
+            if (ModelState.IsValid)
             {
-                client.BaseAddress = new Uri(url);
-                var response = client.GetAsync($"order/get/{order.id}");
-                response.Wait();
-
-                if (response.Result.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    var result = response.Result.Content.ReadAsStringAsync();
-                    var model = JsonConvert.DeserializeObject<Order>(result.Result);
-                    return View(model);
-                }
-                return RedirectToAction("GetInventory", "Customer");
-            }
+                    client.BaseAddress = new Uri(url);
+                    var response = client.GetAsync($"order/get/{order.id}");
+                    response.Wait();
 
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        var result = response.Result.Content.ReadAsStringAsync();
+                        var model = JsonConvert.DeserializeObject<Order>(result.Result);
+                        Log.Information($"Successfully got order: {order.id}");
+                        return View(model);
+                    }
+                    Log.Error($"Unsuccessfully got order: {order.id}");
+                    return RedirectToAction("GetCart", "Customer");
+                }
+            }
+            Log.Error("Unsuccessfully generated receipt");
+            return RedirectToAction("GetCart", "Customer");
         }
+
+        /// <summary>
+        /// Adds order to database
+        /// </summary>
+        /// <param name="cart">The cart of the user who is making the order</param>
+        /// <returns>ReceiptView</returns>
         public IActionResult AddOrder(Cart cart)
         {
             // Get User
             user = HttpContext.Session.GetObject<User>("User");
+            Log.Information($"Attempting to get information for: {user.id}");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
-
+            }
             // Ensure model state
             if (ModelState.IsValid)
             {
@@ -73,6 +95,7 @@ namespace GGsWeb.Controllers
                         var result = response.Result.Content.ReadAsStringAsync();
                         var newOrder = JsonConvert.DeserializeObject<Order>(result.Result);
 
+                        Log.Information($"Successfully created order: {newOrder.id}");
                         // Got order back successfully
                         order.id = newOrder.id;
                         foreach (var item in user.cart.cartItems)
@@ -90,6 +113,7 @@ namespace GGsWeb.Controllers
                             data = new StringContent(json, Encoding.UTF8, "application/json");
                             response = client.PostAsync("lineitem/add", data);
                             response.Wait();
+                            Log.Information($"Successfully create lineItem: {json}");
 
                             // Added new line item successfully
                             // Get inventory item and update quantity
@@ -103,17 +127,27 @@ namespace GGsWeb.Controllers
                             data = new StringContent(json, Encoding.UTF8, "application/json");
                             response = client.PutAsync("inventoryitem/update", data);
                             response.Wait();
+
+                            Log.Information($"Successfully updated inventoryItem: {json}");
                         }
 
                         // Clear cart items and redirect to receipt view
                         user.cart.cartItems.Clear();
                         HttpContext.Session.SetObject("User", user);
-                        return RedirectToAction("Receipt", order); // TODO: make receipt view
+                        return RedirectToAction("Receipt", order);
                     }
                 }
             }
+            Log.Error("Unable to create order");
             return RedirectToAction("GetInventory", "Customer");
         }
+
+        /// <summary>
+        /// Gets the order history customer or location if manager is signed in
+        /// </summary>
+        /// <param name="sort">the order you want to sort</param>
+        /// <param name="locationId">ID of the location (for manager), this will be set to user.locationId for customer</param>
+        /// <returns></returns>
         public IActionResult GetOrderHistory(string sort, int locationId)
         {
             ViewBag.SortOptions = new List<SelectListItem>()
@@ -126,61 +160,79 @@ namespace GGsWeb.Controllers
             ViewBag.Locations = new List<Location>();
             // Get User
             user = HttpContext.Session.GetObject<User>("User");
+            Log.Information($"Attempting to get information for: {user.id}");
             if (user == null)
-                return RedirectToAction("Login", "Home");
-            // Get order history
-            using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(url);
-                string apiCall = "";
+                Log.Error("User session was not found");
+                return RedirectToAction("Login", "Home");
+            }
+            if (ModelState.IsValid)
+            {
+                // Get order history
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(url);
+                    string apiCall = "";
 
-                if (user.type == Models.User.userType.Customer)
-                    apiCall = $"order/get/user?id={user.id}";                    
-                else
-                {
-                    user.locationId = locationId;
-                    HttpContext.Session.SetObject("User", user); // work around for url routing. When changing sort order as manager, match locationID
-                    apiCall = $"order/get/location?id={locationId}";
-                }
-                
-                var response = client.GetAsync(apiCall);
-                response.Wait();
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = response.Result.Content.ReadAsStringAsync();
-                    var model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.id);
-                    switch (sort)
+                    if (user.type == Models.User.userType.Customer)
+                        apiCall = $"order/get/user?id={user.id}";
+                    else
                     {
-                        case "cost_asc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.totalCost);
-                            break;
-                        case "cost_desc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderByDescending(x => x.totalCost);
-                            break;
-                        case "date_asc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.orderDate);
-                            break;
-                        case "date_desc":
-                            model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderByDescending(x => x.orderDate);
-                            break;
-                        default:
-                            break;
+                        user.locationId = locationId;
+                        HttpContext.Session.SetObject("User", user); // work around for url routing. When changing sort order as manager, match locationID
+                        apiCall = $"order/get/location?id={locationId}";
                     }
-                    response = client.GetAsync("location/getAll");
+
+                    var response = client.GetAsync(apiCall);
                     response.Wait();
-                    result = response.Result;
+                    var result = response.Result;
                     if (result.IsSuccessStatusCode)
                     {
-                        var jsonString = result.Content.ReadAsStringAsync();
-                        jsonString.Wait();
-                        var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
-                        ViewBag.Locations = locations;
+                        Log.Information($"Successfully got order history for user: {user.id}");
+                        var data = response.Result.Content.ReadAsStringAsync();
+                        var model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.id);
+                        switch (sort)
+                        {
+                            case "cost_asc":
+                                model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.totalCost);
+                                break;
+                            case "cost_desc":
+                                model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderByDescending(x => x.totalCost);
+                                break;
+                            case "date_asc":
+                                model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderBy(x => x.orderDate);
+                                break;
+                            case "date_desc":
+                                model = JsonConvert.DeserializeObject<List<Order>>(data.Result).OrderByDescending(x => x.orderDate);
+                                break;
+                            default:
+                                break;
+                        }
+                        response = client.GetAsync("location/getAll");
+                        response.Wait();
+                        result = response.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            var jsonString = result.Content.ReadAsStringAsync();
+                            jsonString.Wait();
+                            var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
+                            ViewBag.Locations = locations;
+                            Log.Information("Succesfully got all locations");
+                        }
+                        return View(model);
                     }
-                    return View(model);
+                    Log.Error("Unsuccessfully got order history");
+                    if (user.type == Models.User.userType.Customer)
+                        return RedirectToAction("GetInventory", "Customer");
+                    else
+                        return RedirectToAction("GetInventory", "Manager");
                 }
-                return RedirectToAction("GetInventory", "Customer");
             }
+            Log.Error("ModelState is invalid for GetOrderHistory");
+            if (user.type == Models.User.userType.Customer)
+                return RedirectToAction("GetInventory", "Customer");
+            else
+                return RedirectToAction("GetInventory", "Manager");
         }
     }
 }
