@@ -77,13 +77,13 @@ namespace GGsWeb.Controllers
                         }
                         else
                         { 
-                            alertService.Danger("Invalid email or password. Please try again.", true);
+                            alertService.Danger("Invalid email or password. Please try again.");
                             Log.Error($"Unsuccessfuly login: {model}");
                             ModelState.AddModelError("Error", "Invalid information");
                             return View(model);
                         }
                     }
-                    alertService.Danger("Unable to reach server. Please try again.", true);
+                    alertService.Danger("Unable to reach server. Please try again.");
                 }
             }
             Log.Error($"ModelState was not valid: {ModelState}");
@@ -130,13 +130,14 @@ namespace GGsWeb.Controllers
                             // Successful add
                             HttpContext.Session.SetObject("User", newUser);
                             Log.Information($"Successfully added user: {newUser}");
+                            alertService.Success("Succesfully created account!", true);
                             return RedirectToAction("GetInventory", "Customer");
                         }
                     }
                 }
                 else
                 {
-                    // TODO: Failed sign in
+                    alertService.Danger("Unable to create account", true);
                     Log.Error("Unsuccesful sign up");
                 }
             }
@@ -190,6 +191,7 @@ namespace GGsWeb.Controllers
         {
             // Clear session data and redirect to login page
             HttpContext.Session.Clear();
+            alertService.Success("Succesfully logged out", true);
             Log.Information("Signing out user");
             return View("Login");
         }

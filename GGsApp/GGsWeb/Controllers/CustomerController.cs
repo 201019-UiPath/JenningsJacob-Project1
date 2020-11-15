@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GGsWeb.Features;
 using GGsWeb.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,6 +21,11 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
+        private AlertService alertService { get; }
+        public CustomerController(AlertService alertService)
+        {
+            this.alertService = alertService;
+        }
 
         /// <summary>
         /// Fetches inventory for the user's location ID 
@@ -102,6 +108,7 @@ namespace GGsWeb.Controllers
                 user.cart.cartItems.Add(item);
                 HttpContext.Session.SetObject("User", user);
                 Log.Information($"Updated user session data: {user}");
+                alertService.Information($"{videoGame.name} added to cart!", true);
                 return View("GetInventory", user.location.inventory);
             }
             Log.Error($"ModelState was not valid: {ModelState}");
@@ -236,8 +243,13 @@ namespace GGsWeb.Controllers
                     {
                         // Successfully edited user
                         HttpContext.Session.SetObject("User", newUser);
+                        alertService.Success("Succesfully updated information");
                         Log.Information($"Succesfully updated user: {newUser}");
                         return View(newUser);
+                    }
+                    else
+                    {
+                        alertService.Danger("Something went wrong");
                     }
                 }
                 return View("GetInventory");

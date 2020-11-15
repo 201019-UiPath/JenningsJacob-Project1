@@ -35,9 +35,7 @@ namespace GGsWeb.Features
 
         private void AddAlert(string alertStyle, string message, bool dismissable)
         {
-            var alerts = _tempData.ContainsKey(Alert.TempDataKey)
-                ? (List<Alert>)_tempData[Alert.TempDataKey]
-                : new List<Alert>();
+            var alerts = _tempData.DeserializeAlerts(Alert.TempDataKey);
 
             alerts.Add(new Alert
             {
@@ -46,7 +44,7 @@ namespace GGsWeb.Features
                 Dismissable = dismissable
             });
 
-            _tempData[Alert.TempDataKey] = alerts;
+            _tempData.SerializeAlerts(Alert.TempDataKey, alerts);
         }
     }
 }
