@@ -29,7 +29,7 @@
                 {
                     <tr>
                         <td>@item.Name</td>
-                        <td>@Html.ActionLink("Select", "AddInventoryItem", "Manager", new { name = item.Name})</td>
+                        <td>@Html.ActionLink("Select", "AddInventoryItem", "Manager", new { name = item.Name, id = item.Id})</td>
                     </tr>
                 }
             </tbody>

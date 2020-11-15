@@ -17,6 +17,8 @@ namespace GGsDB.Entities
         public string Platform { get; set; }
         public string Esrb { get; set; }
         public string Description { get; set; }
+        public int ApiId { get; set; }
+        public string ImageURL { get; set; }
         public virtual ICollection<Inventoryitems> Inventoryitems { get; set; }
         public virtual ICollection<Lineitems> Lineitems { get; set; }
     }

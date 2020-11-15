@@ -10,5 +10,7 @@ namespace GGsDB.Models
         public string platform { get; set; }
         public string esrb { get; set; }
         public string description { get; set; }
+        public int apiId { get; set; }
+        public string imageURL { get; set; }
     }
 }

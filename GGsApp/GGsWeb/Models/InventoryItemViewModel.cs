@@ -29,5 +29,7 @@ namespace GGsWeb.Models
         public string description { get; set; }
         [DisplayName("Location")]
         public int locationId { get; set; }
+        public int apiId { get; set; }
+        public string imageURL { get; set; }
     }
 }

@@ -26,14 +26,14 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                    @if (user.type == GGsWeb.Models.User.userType.Customer)
-                    {
-                        @Html.Partial("CustomerNavBar")
-                    }
-                    else if (user.type == GGsWeb.Models.User.userType.Manager)
-                    {
-                        @Html.Partial("ManagerNavBar")
-                    }
+                @if (user.type == GGsWeb.Models.User.userType.Customer)
+                {
+                    @Html.Partial("CustomerNavBar")
+                }
+                else if (user.type == GGsWeb.Models.User.userType.Manager)
+                {
+                    @Html.Partial("ManagerNavBar")
+                }
             </div>
         </nav>
     </header>

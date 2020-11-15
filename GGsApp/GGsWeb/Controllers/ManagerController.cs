@@ -28,7 +28,7 @@ namespace GGsWeb.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Home");
             if (ModelState.IsValid)
-            {
+            { 
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(url);
@@ -130,12 +130,19 @@ namespace GGsWeb.Controllers
             return View(new List<GiantBomb.Api.Model.Game>());
         }
         [HttpGet]
-        public IActionResult AddInventoryItem(string name)
+        public IActionResult AddInventoryItem(string name, int id)
         {
             if (ModelState.IsValid)
             {
                 InventoryItemViewModel model = new InventoryItemViewModel();
                 model.name = name;
+                model.apiId = id;
+
+                // Get API key:
+                string apikey = config.GetConnectionString("GiantBombAPI");
+                var giantBomb = new GiantBombRestClient(apikey);
+                var game = giantBomb.GetGame(id);
+                model.imageURL = game.Image.SmallUrl;
 
                 // Get Locations
                 using (var client = new HttpClient())
@@ -174,6 +181,8 @@ namespace GGsWeb.Controllers
             newVideoGame.esrb = model.esrb;
             newVideoGame.cost = model.cost;
             newVideoGame.description = model.description;
+            newVideoGame.apiId = model.apiId;
+            newVideoGame.imageURL = model.imageURL;
 
             // Add video game to database
             using (var client = new HttpClient())
@@ -212,7 +221,7 @@ namespace GGsWeb.Controllers
                         {
                             // Successfully added inventory item
                             // TODO: add confirmation message
-                            return RedirectToAction("GetInventory", user.locationId);
+                            return RedirectToAction("GetInventory", new { locationId = user.locationId });
                         }
                     }
                 }

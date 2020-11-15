@@ -268,6 +268,12 @@ namespace GGsDB.Entities
                 entity.Property(e => e.Description)
                     .HasColumnName("description");
 
+                entity.Property(e => e.ApiId)
+                    .HasColumnName("apiid");
+
+                entity.Property(e => e.ImageURL)
+                    .HasColumnName("imageurl");
+
             });
 
             OnModelCreatingPartial(modelBuilder);
