@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using NpgsqlTypes;
+using Serilog;
 
 namespace GGsWeb.Controllers
 {
@@ -19,15 +20,20 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
-        public IActionResult Index()
-        {
-            return View();
-        }
+
+        /// <summary>
+        /// Fetches inventory for the user's location ID 
+        /// </summary>
+        /// <returns>GetInventory View</returns>
         public IActionResult GetInventory()
         {
+            Log.Information("Entered Customer Get Inventory Menu");
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
+            }
             if (ModelState.IsValid)
             {
                 using (var client = new HttpClient())
@@ -39,6 +45,7 @@ namespace GGsWeb.Controllers
                     var result = response.Result;
                     if (result.IsSuccessStatusCode)
                     {
+                        Log.Information($"Succesfully got inventory for {user.name} @ {user.locationId}");
                         var jsonString = result.Content.ReadAsStringAsync();
                         jsonString.Wait();
 
@@ -47,119 +54,196 @@ namespace GGsWeb.Controllers
                     }
                 }
             }
+            Log.Error($"Unsuccessful attempt to get inventory at locationId: {user.locationId}");
             return View();
         }
+
+        /// <summary>
+        /// Adds the given item to a user's cart
+        /// </summary>
+        /// <param name="videoGameId">ID of the video game you want to add</param>
+        /// <param name="quantity">Quantity of the item you want to add</param>
+        /// <returns>Get Inevntory View</returns>
         public IActionResult AddItemToCart(int videoGameId, int quantity)
         {
+            Log.Information($"Attemping to add item to cart: VideoGameID: {videoGameId}, Quantity: {quantity}");
             VideoGame videoGame = new VideoGame();
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                var response = client.GetAsync($"videogame/get?id={videoGameId}");
-                response.Wait();
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var jsonString = result.Content.ReadAsStringAsync();
-                    jsonString.Wait();
-                    var vg = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
-                    videoGame = vg;
-                }
             }
-            CartItem item = new CartItem()
+            if(ModelState.IsValid)
             {
-                videoGameId = videoGameId,
-                videoGame = videoGame,
-                quantity = quantity
-            };
-            user.cart.totalCost += (videoGame.cost * quantity);
-            user.cart.cartItems.Add(item);
-            HttpContext.Session.SetObject("User", user);
-            return View("GetInventory", user.location.inventory);
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(url);
+                    var response = client.GetAsync($"videogame/get?id={videoGameId}");
+                    response.Wait();
+                    var result = response.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+
+                        var jsonString = result.Content.ReadAsStringAsync();
+                        jsonString.Wait();
+                        var vg = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
+                        videoGame = vg;
+                        Log.Information($"Succesfuly got videogame: {videoGame.id}");
+                    }
+                }
+                CartItem item = new CartItem()
+                {
+                    videoGameId = videoGameId,
+                    videoGame = videoGame,
+                    quantity = quantity
+                };
+                user.cart.totalCost += (videoGame.cost * quantity);
+                user.cart.cartItems.Add(item);
+                HttpContext.Session.SetObject("User", user);
+                Log.Information($"Updated user session data: {user}");
+                return View("GetInventory", user.location.inventory);
+            }
+            Log.Error($"ModelState was not valid: {ModelState}");
+            return RedirectToAction("GetInventory");
         }
+
+        /// <summary>
+        /// Removes the given item from a user's cart
+        /// </summary>
+        /// <param name="videoGame">Video game object you wish to remove</param>
+        /// <returns>Redirect to GetCart action</returns>
         public IActionResult RemoveItemFromCart(VideoGame videoGame)
         {
+            Log.Information($"Attempting to remove item from cart: {videoGame.id}");
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
-                return RedirectToAction("Login", "Home");
-            CartItem item = new CartItem()
             {
-                videoGameId = videoGame.id,
-                videoGame = videoGame,
-                quantity = 1
-            };
-            user.cart.cartItems.RemoveAll(x => x.videoGameId == item.videoGameId);
-            user.cart.totalCost -= (videoGame.cost * item.quantity);
-            HttpContext.Session.SetObject("User", user);
-            return RedirectToAction("GetCart");
+                Log.Error("User session was not found");
+                return RedirectToAction("Login", "Home");
+            }
+            if (ModelState.IsValid)
+            {
+                CartItem item = new CartItem()
+                {
+                    videoGameId = videoGame.id,
+                    videoGame = videoGame,
+                    quantity = 1
+                };
+                user.cart.cartItems.RemoveAll(x => x.videoGameId == item.videoGameId);
+                user.cart.totalCost -= (videoGame.cost * item.quantity);
+                HttpContext.Session.SetObject("User", user);
+                Log.Information($"Successfully removed item form cart: {videoGame.id}");
+                Log.Information($"Updated user session data: {user}");
+                return RedirectToAction("GetCart");
+            }
+            Log.Error($"ModelState was not valid: {ModelState}");
+            return RedirectToAction("GetInventory");
         }
+
+        /// <summary>
+        /// Gets the user's cart and presents view
+        /// </summary>
+        /// <returns>GetCart View</returns>
         public IActionResult GetCart()
         {
             user = HttpContext.Session.GetObject<User>("User");
+            Log.Information($"Attempting to get cart for: {user}");
             if (user == null)
+            {
+                Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
+            }
             return View(user.cart);
         }
+
+        /// <summary>
+        /// Gets the EditUser view
+        /// </summary>
+        /// <returns>EditUserView</returns>
         [HttpGet]
         public IActionResult EditUser()
         {
             user = HttpContext.Session.GetObject<User>("User");
+            Log.Information($"Attempting to get information for: {user}");
             if (user == null)
-                return RedirectToAction("Login", "Home");
-            using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(url);
-                var response = client.GetAsync("location/getAll");
-                response.Wait();
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
+                Log.Error("User session was not found");
+                return RedirectToAction("Login", "Home");
+            }
+            if (ModelState.IsValid)
+            {
+                using (var client = new HttpClient())
                 {
-                    var jsonString = result.Content.ReadAsStringAsync();
-                    jsonString.Wait();
-                    var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
-                    var locationOptions = new List<SelectListItem>();
-                    foreach (var l in locations)
+                    client.BaseAddress = new Uri(url);
+                    var response = client.GetAsync("location/getAll");
+                    response.Wait();
+                    var result = response.Result;
+                    if (result.IsSuccessStatusCode)
                     {
-                        locationOptions.Add(new SelectListItem { Selected = false, Text = $"{l.city}, {l.state}", Value = l.id.ToString() });
+                        var jsonString = result.Content.ReadAsStringAsync();
+                        jsonString.Wait();
+                        var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
+                        var locationOptions = new List<SelectListItem>();
+                        Log.Information($"Succesfully retreived from database: {locations}");
+                        foreach (var l in locations)
+                        {
+                            locationOptions.Add(new SelectListItem { Selected = false, Text = $"{l.city}, {l.state}", Value = l.id.ToString() });
+                        }
+                        ViewBag.locationOptions = locationOptions;
+                        return View(user);
                     }
-                    ViewBag.locationOptions = locationOptions;
+                    Log.Error("Unsuccessully made API call: location/getAll");
                 }
             }
-            return View(user);
+            Log.Error($"ModelState was not valid: {ModelState}");
+            return RedirectToAction("GetInventory");
         }
+
+        /// <summary>
+        /// Updates user information to the database
+        /// </summary>
+        /// <param name="newUser">Updated user information</param>
+        /// <returns>EditUser View</returns>
         [HttpPost]
         public IActionResult EditUser(User newUser)
         {
             user = HttpContext.Session.GetObject<User>("User");
+            Log.Information($"Attempting to get information for: {user}");
             if (user == null)
-                return RedirectToAction("Login", "Home");
-
-            // Map newUser values
-            // User decided not to update password, keep it the same
-            if (newUser.password == null)
-                newUser.password = user.password;
-            newUser.location = user.location;
-            newUser.orders = user.orders;
-
-            using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(url);
-                var json = JsonConvert.SerializeObject(newUser);
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = client.PutAsync("user/update", data);
-                response.Wait();
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    // Successfully edited user
-                    HttpContext.Session.SetObject("User", newUser);
-                    return View(newUser);
-                }
+                Log.Error("User session was not found");
+                return RedirectToAction("Login", "Home");
             }
-            return View("GetInventory");
+            if (ModelState.IsValid)
+            {
+                // Map newUser values
+                // User decided not to update password, keep it the same
+                if (newUser.password == null)
+                    newUser.password = user.password;
+                newUser.location = user.location;
+                newUser.orders = user.orders;
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(url);
+                    var json = JsonConvert.SerializeObject(newUser);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = client.PutAsync("user/update", data);
+                    response.Wait();
+                    var result = response.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        // Successfully edited user
+                        HttpContext.Session.SetObject("User", newUser);
+                        Log.Information($"Succesfully updated user: {newUser}");
+                        return View(newUser);
+                    }
+                }
+                return View("GetInventory");
+            }
+            Log.Error($"ModelState was not valid: {ModelState}");
+            return RedirectToAction("GetInventory");
         }
     }
 }
