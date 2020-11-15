@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http;
+@using GGsWeb.Models;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    User user = new User();
+    if (HttpContextAccessor.HttpContext.Session.GetObject<User>("User") != null)
+    {
+        user = HttpContextAccessor.HttpContext.Session.GetObject<User>("User");
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -16,25 +26,14 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="GetInventory">Video Games</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="GetCart">View Cart</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark float-right" asp-area="" asp-controller="Order" asp-action="GetOrderHistory">View Order History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark float-right" asp-area="" asp-controller="Customer" asp-action="EditUser">Edit Information</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark float-right" asp-area="" asp-controller="Home" asp-action="SignOut">Sign Out</a>
-                        </li>
-                    </ul>
-                </div>
+                    @if (user.type == GGsWeb.Models.User.userType.Customer)
+                    {
+                        @Html.Partial("CustomerNavBar")
+                    }
+                    else if (user.type == GGsWeb.Models.User.userType.Manager)
+                    {
+                        @Html.Partial("ManagerNavBar")
+                    }
             </div>
         </nav>
     </header>
