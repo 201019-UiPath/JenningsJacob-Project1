@@ -15,7 +15,7 @@ namespace GGsWeb.Controllers
 {
     public class ManagerController : Controller
     {
-        const string url = "https://localhost:44316/";
+        const string url = "https://localhost:44316/"; 
         private User user;
         private readonly IConfiguration config;
         public ManagerController(IConfiguration configuration)
