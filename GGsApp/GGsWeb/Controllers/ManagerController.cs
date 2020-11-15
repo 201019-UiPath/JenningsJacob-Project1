@@ -8,6 +8,7 @@ using GGsWeb.Models;
 using GiantBomb.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace GGsWeb.Controllers
@@ -16,8 +17,11 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
-        const string apikey = "d77923d254b605206d54a4bec92d0f254ce238fc";
-
+        private readonly IConfiguration config;
+        public ManagerController(IConfiguration configuration)
+        {
+            config = configuration;
+        }
         public IActionResult GetInventory(int locationId)
         {
             user = HttpContext.Session.GetObject<User>("User");
@@ -115,6 +119,8 @@ namespace GGsWeb.Controllers
         [HttpGet]
         public IActionResult ViewInventoryItems(string searchString)
         {
+            // Get API key:
+            string apikey = config.GetConnectionString("GiantBombAPI");
             var giantBomb = new GiantBombRestClient(apikey);
             if (!String.IsNullOrEmpty(searchString))
             {
