@@ -95,7 +95,7 @@ form:before {
     position: absolute;
     top: 0;
     width: 100%;
-    background-color: rgba(0,0,0,0.3);
+/*    background-color: rgba(0,0,0,0.3);*/
     z-index: -1;
     border-radius: 10px;
 }
@@ -123,6 +123,12 @@ form:before {
 /*    grid-gap: .25rem;*/
 }
 .card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: contain;
+    background-color: #092047;
+}
+.game-image {
     width: 100%;
     height: 15vw;
     object-fit: contain;

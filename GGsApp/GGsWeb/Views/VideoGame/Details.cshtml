@@ -12,57 +12,43 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>@Html.DisplayFor(model => model.name)</h1>
 @if (user.type == GGsWeb.Models.User.userType.Customer)
-{
-    <a asp-action="GetInventory" asp-controller="Customer">Back to List</a>
-}
+{<a asp-action="GetInventory" asp-controller="Customer">Back to List</a>}
 else
-{
-    <a asp-action="GetInventory" asp-controller="Manager" asp-route-locationId="1">Back to List</a>
-}
-<div>
+{<a asp-action="GetInventory" asp-controller="Manager" asp-route-locationId="1">Back to List</a>}
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <div class="media">
+                <img src="@Model.imageURL" alt="" class="img-fluid">
+            </div>
+        </div>
+        <div class="col-4">
+            <h3>@Html.DisplayFor(model => model.name)</h3>
+            <p>@Html.DisplayNameFor(model => model.platform): @Html.DisplayFor(model => model.platform)</p>
+            <p>@Html.DisplayNameFor(model => model.esrb): @Html.DisplayFor(model => model.esrb)</p>
+            <p>@Html.DisplayFor(model => model.cost)</p>
+            @if (user.type == GGsWeb.Models.User.userType.Customer)
+            {
+        <div class="row">
+            <form class="form-inline" asp-action="AddItemToCart" asp-controller="Customer" asp-route-quantity="quantity" asp-route-videoGameId="@Model.id">
+                <div class="form-group input-group">
+                    <div class="col">
+                        <span>
+                            <select name="quantity" class="form-control" for="quantity" asp-items="ViewBag.QuantityOptions"></select>
+                            <button class="btn btn-primary" type="submit">Add To Cart</button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+            }
+            else
+            {<button class="btn btn-primary">Manage Inventory</button>}
+            
+        </div>
+    </div>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.id)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.id)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.cost)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.cost)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.platform)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.platform)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.esrb)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.esrb)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.Raw(Model.description)
-        </dd>
-    </dl>
-
-</div>
-<div>
-    <button class="btn btn-primary">Add To Cart</button>
+    @Html.Raw(Model.description)
 </div>

@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GGsWeb.Features;
 using GGsWeb.Models;
+using GiantBomb.Api;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -14,7 +18,13 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
-
+        private readonly IConfiguration config;
+        private readonly AlertService alertService;
+        public VideoGameController(IConfiguration configuration, AlertService alertService)
+        {
+            config = configuration;
+            this.alertService = alertService;
+        }
         /// <summary>
         /// Gets a video game's details
         /// </summary>
@@ -22,12 +32,20 @@ namespace GGsWeb.Controllers
         /// <returns>DetailsView</returns>
         public IActionResult Details(int id)
         {
-            user = HttpContext.Session.GetObject<User>("User");
-            if (user == null)
-            {
-                Log.Error("User session was not found");
-                return RedirectToAction("Login", "Home");
-            }
+            List<SelectListItem> options = Enumerable.Range(1, 10)
+                .Select(n => new SelectListItem
+                {
+                    Value = n.ToString(),
+                    Text = n.ToString()
+                }).ToList();
+            ViewBag.QuantityOptions = options;
+            
+            //user = HttpContext.Session.GetObject<User>("User");
+            //if (user == null)
+            //{
+            //    Log.Error("User session was not found");
+            //    return RedirectToAction("Login", "Home");
+            //}
             if (ModelState.IsValid)
             {
                 using (var client = new HttpClient())
@@ -45,6 +63,10 @@ namespace GGsWeb.Controllers
                         Log.Information($"Successfully got videogame: {id}");
 
                         var model = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
+                        string apikey = config.GetConnectionString("GiantBombAPI");
+                        var giantBomb = new GiantBombRestClient(apikey);
+                        var game = giantBomb.GetGame(model.apiId);
+
                         return View(model);
                     }
                 }
