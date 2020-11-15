@@ -7,7 +7,7 @@ namespace GGsDB.Repos
     {
         void AddLineItem(LineItem item);
         void UpdateLineItem(LineItem item);
-        LineItem GetLineItemByOrderId(int id);
+        LineItem GetLineItemById(int id);
         List<LineItem> GetAllLineItems(int orderId);
         void DeleteLineItem(int id);
     }

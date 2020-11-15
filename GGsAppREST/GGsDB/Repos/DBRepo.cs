@@ -152,7 +152,7 @@ namespace GGsDB.Repos
             context.Entry(existingItem).State = EntityState.Modified;
             context.SaveChanges();
         }
-        public LineItem GetLineItemByOrderId(int id)
+        public LineItem GetLineItemById(int id)
         {
 
             return mapper.ParseLineItem(context.Lineitems.Single(x => x.Id == id));

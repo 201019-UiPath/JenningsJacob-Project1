@@ -25,7 +25,7 @@ namespace GGsLib
         }
         public LineItem GetLineItemById(int id)
         {
-            return repo.GetLineItemByOrderId(id);
+            return repo.GetLineItemById(id);
         }
         public void UpdateLineItem(LineItem item)
         {
