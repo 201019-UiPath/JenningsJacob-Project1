@@ -115,7 +115,7 @@ namespace GGsWeb.Controllers
             return RedirectToAction("GetInventory", new { locationId = 1 });
         }
         [HttpGet]
-        public IActionResult AddInventoryItem(string searchString)
+        public IActionResult ViewInventoryItems(string searchString)
         {
             var giantBomb = new GiantBombRestClient(apikey);
             if (!String.IsNullOrEmpty(searchString))
@@ -124,6 +124,14 @@ namespace GGsWeb.Controllers
                 return View(results);
             }
             return View(new List<GiantBomb.Api.Model.Game>());
+        }
+        [HttpGet]
+        public IActionResult AddInventoryItem(string name, string description)
+        {
+            InventoryItemViewModel model = new InventoryItemViewModel();
+            model.name = name;
+            model.description = description;
+            return View(model);
         }
     }
 }
