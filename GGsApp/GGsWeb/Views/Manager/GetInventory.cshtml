@@ -17,12 +17,12 @@
 </div>
 <div class="row">
     <div class="col">
-        @Html.ActionLink("Add New Prodcuct", "ViewInventoryItems")
+        @Html.ActionLink("Add New Product", "ViewInventoryItems")
     </div>
 </div>
 <hr/>
 
-<div class="container card-deck">
+<div class="container card-deck card-columns">
     @foreach (var item in Model)
     {
         @Html.Partial("InventoryItemPartial", item);

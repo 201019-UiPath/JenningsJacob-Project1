@@ -104,3 +104,27 @@ form:before {
 .navbar {
     background-color: #092047;
 }
+
+.card-columns {
+    @include media-breakpoint-only(lg) {
+        column-count: 4;
+    }
+
+    @include media-breakpoint-only(xl) {
+        column-count: 5;
+    }
+}
+
+.card-deck {
+    margin-top: 10px;
+    margin-left: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+/*    grid-gap: .25rem;*/
+}
+.card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: contain;
+    background-color: #092047;
+}

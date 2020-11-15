@@ -9,7 +9,7 @@
 
 @*<partial name="CardView"  />*@
 
-<div class="container card-deck">
+<div class="container card-deck card-columns">
     @foreach (var item in Model)
     {
         @Html.Partial("InventoryItemPartial", item);
