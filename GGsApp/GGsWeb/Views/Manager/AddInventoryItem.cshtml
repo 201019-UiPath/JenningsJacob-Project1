@@ -14,13 +14,13 @@
                             <div class="form-row">
                                 <div class="form-group col-12">
                                     <label asp-for="name"></label>
-                                    <input type="text" class="form-control" asp-for="name"/>
+                                    <input required type="text" class="form-control" asp-for="name" />
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-6">
                                     <label asp-for="platform"></label>
-                                    <select class="form-control" asp-for="platform">
+                                    <select required class="form-control" asp-for="platform">
                                         <option selected>Choose...</option>
                                         <option>PC</option>
                                         <option>PS5</option>
@@ -30,7 +30,7 @@
                                 </div>
                                 <div class="form-group col-6">
                                     <label asp-for="esrb"></label>
-                                    <select class="form-control" asp-for="esrb">
+                                    <select required  class="form-control" asp-for="esrb">
                                         <option selected>Choose...</option>
                                         <option>E</option>
                                         <option>E10</option>
@@ -42,17 +42,26 @@
                             <div class="form-row">
                                 <div class="form-group col-6">
                                     <label asp-for="quantity"></label>
-                                    <input type="number" min="1" class="form-control" asp-for="quantity">
+                                    <input type="number" min="1" required class="form-control" asp-for="quantity">
                                 </div>
                                 <div class="form-group col-6">
                                     <label asp-for="cost"></label>
-                                    <input type="number" min="0" class="form-control" asp-for="cost">
+                                    <input type="number" placeholder="0.00" required min="0" 
+                                           step="0.01" asp-for="cost" pattern="^\d+(?:\.\d{1,2})?$" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label asp-for="locationId"></label>
+                                    <select asp-for="locationId" required asp-items="ViewBag.locationOptions" class="form-control">
+                                        <option>Select a location...</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-12">
                                     <label asp-for="description"></label>
-                                    <textarea class="form-control" rows="3" asp-for="description"></textarea>
+                                    <textarea required class="form-control" rows="3" asp-for="description"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">

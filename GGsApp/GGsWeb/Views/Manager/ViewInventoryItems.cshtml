@@ -7,7 +7,7 @@
 <div>
 <h1>Add Inventory Item</h1>
     <div class="row justify-content-center">
-        <form asp-action="AddInventoryItem" method="get">
+        <form asp-action="ViewInventoryItems" method="get">
             <p>
                 <input type="text" name="searchString" class="form-control col" placeholder="Enter Video Game Name" />
                 <input type="submit" class="btn btn-primary col" value="Search" />
@@ -29,7 +29,7 @@
                 {
                     <tr>
                         <td>@item.Name</td>
-                        <td>@Html.ActionLink("Select", "AddInventoryItem", "Manager", new { name = item.Name, description = item.Description})</td>
+                        <td>@Html.ActionLink("Select", "AddInventoryItem", "Manager", new { name = item.Name})</td>
                     </tr>
                 }
             </tbody>

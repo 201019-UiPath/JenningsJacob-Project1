@@ -31,6 +31,19 @@ namespace GGsAPI.Controllers
                 return NotFound();
             }
         }
+        [HttpGet("get/name")]
+        [Produces("application/json")]
+        public IActionResult GetVideoGameById(string name)
+        {
+            try
+            {
+                return Ok(_videoGameService.GetVideoGameByName(name));
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
         [HttpGet("getAll")]
         [Produces("application/json")]
         public IActionResult GetAllVideoGames()

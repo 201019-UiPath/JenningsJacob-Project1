@@ -27,6 +27,10 @@ namespace GGsLib
         {
             return repo.GetVideoGameById(id);
         }
+        public VideoGame GetVideoGameByName(string name)
+        {
+            return repo.GetVideoGameByName(name);
+        }
         public void UpdateVideoGame(VideoGame videoGame)
         {
             repo.UpdateVideoGame(videoGame);

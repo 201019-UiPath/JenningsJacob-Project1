@@ -18,8 +18,6 @@ namespace GGsWeb.Controllers
         private User user;
         const string apikey = "d77923d254b605206d54a4bec92d0f254ce238fc";
 
-        public Encoding Enconding { get; private set; }
-
         public IActionResult GetInventory(int locationId)
         {
             user = HttpContext.Session.GetObject<User>("User");
@@ -126,12 +124,95 @@ namespace GGsWeb.Controllers
             return View(new List<GiantBomb.Api.Model.Game>());
         }
         [HttpGet]
-        public IActionResult AddInventoryItem(string name, string description)
+        public IActionResult AddInventoryItem(string name)
         {
-            InventoryItemViewModel model = new InventoryItemViewModel();
-            model.name = name;
-            model.description = description;
-            return View(model);
+            if (ModelState.IsValid)
+            {
+                InventoryItemViewModel model = new InventoryItemViewModel();
+                model.name = name;
+
+                // Get Locations
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(url);
+                    var response = client.GetAsync("location/getAll");
+                    response.Wait();
+                    var result = response.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var jsonString = result.Content.ReadAsStringAsync();
+                        jsonString.Wait();
+                        var locations = JsonConvert.DeserializeObject<List<Location>>(jsonString.Result);
+                        var locationOptions = new List<SelectListItem>();
+                        foreach (var l in locations)
+                        {
+                            locationOptions.Add(new SelectListItem { Selected = false, Text = $"{l.street}, {l.city}, {l.state}, {l.zipCode}", Value = l.id.ToString() });
+                        }
+                        ViewBag.locationOptions = locationOptions;
+                    }
+                }
+                return View(model);
+            }
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddInventoryItem(InventoryItemViewModel model)
+        {
+            user = HttpContext.Session.GetObject<User>("User");
+            if (user == null)
+                return RedirectToAction("Login", "Home");
+            // Create Video game
+            VideoGame newVideoGame = new VideoGame();
+            newVideoGame.name = model.name;
+            newVideoGame.platform = model.platform;
+            newVideoGame.esrb = model.esrb;
+            newVideoGame.cost = model.cost;
+            newVideoGame.description = model.description;
+
+            // Add video game to database
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                var json = JsonConvert.SerializeObject(newVideoGame);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = client.PostAsync("videogame/add", data);
+                response.Wait();
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    // Successfully added new video game
+                    // Get videogame back from db to get id value
+                    response = client.GetAsync($"videogame/get/name?name={newVideoGame.name}");
+                    response.Wait();
+                    result = response.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var jsonString = result.Content.ReadAsStringAsync();
+                        jsonString.Wait();
+                        newVideoGame = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
+
+                        // Create new inventory item and add to DB
+                        InventoryItem newItem = new InventoryItem();
+                        newItem.locationId = model.locationId;
+                        newItem.quantity = model.quantity;
+                        newItem.videoGameId = newVideoGame.id;
+
+                        json = JsonConvert.SerializeObject(newItem);
+                        data = new StringContent(json, Encoding.UTF8, "application/json");
+                        response = client.PostAsync("inventoryitem/add", data);
+                        response.Wait();
+                        result = response.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            // Successfully added inventory item
+                            // TODO: add confirmation message
+                            return RedirectToAction("GetInventory", user.locationId);
+                        }
+                    }
+                }
+                // Failed
+                return RedirectToAction("GetInventory", user.locationId);
+            }
         }
     }
 }

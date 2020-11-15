@@ -330,6 +330,11 @@ namespace GGsDB.Repos
             return mapper.ParseVideoGame(context.Videogames.Single(x => x.Id == id));
 
         }
+        public VideoGame GetVideoGameByName(string name)
+        {
+            return mapper.ParseVideoGame(context.Videogames.First(x => x.Name == name));
+
+        }
         public List<VideoGame> GetAllVideoGames()
         {
             return mapper.ParseVideoGame(context.Videogames.Select(x => x).ToList());
