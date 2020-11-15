@@ -33,7 +33,8 @@ namespace GGsWeb
                     config.Cookie.Name = "UserLoginCookie";
                     config.LoginPath = "/Home/Login";
                 });
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddHttpContextAccessor();
             services.AddScoped<AlertService>();
 
             services.AddAuthorization();

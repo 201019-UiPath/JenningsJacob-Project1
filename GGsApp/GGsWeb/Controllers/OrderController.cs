@@ -56,7 +56,6 @@ namespace GGsWeb.Controllers
         {
             // Get User
             user = HttpContext.Session.GetObject<User>("User");
-            Log.Information($"Attempting to get information for: {user.id}");
             if (user == null)
             {
                 Log.Error("User session was not found");
@@ -160,7 +159,6 @@ namespace GGsWeb.Controllers
             ViewBag.Locations = new List<Location>();
             // Get User
             user = HttpContext.Session.GetObject<User>("User");
-            Log.Information($"Attempting to get information for: {user.id}");
             if (user == null)
             {
                 Log.Error("User session was not found");

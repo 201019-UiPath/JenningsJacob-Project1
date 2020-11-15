@@ -1,5 +1,7 @@
-﻿using GGsWeb.Models;
+﻿using GGsWeb.Features;
+using GGsWeb.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -20,6 +22,21 @@ namespace GGsWeb
         {
             var value = session.GetString(key);
             return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
+        }
+
+        public static void SerializeAlerts(this ITempDataDictionary tempData, string alertKeyName, List<Alert> alerts)
+        {
+            tempData[alertKeyName] = JsonConvert.SerializeObject(alerts);
+        }
+
+        public static List<Alert> DeserializeAlerts(this ITempDataDictionary tempData, string alertKeyName)
+        {
+            var alerts = new List<Alert>();
+            if (tempData.ContainsKey(alertKeyName))
+            {
+                alerts = JsonConvert.DeserializeObject<List<Alert>>(tempData[alertKeyName].ToString());
+            }
+            return alerts;
         }
     }
 }

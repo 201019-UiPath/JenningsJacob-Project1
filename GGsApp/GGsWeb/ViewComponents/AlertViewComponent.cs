@@ -11,9 +11,7 @@ namespace GGsWeb.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var alerts = TempData.ContainsKey(Alert.TempDataKey)
-                ? (List<Alert>)TempData[Alert.TempDataKey]
-                : new List<Alert>();
+            var alerts = TempData.DeserializeAlerts(Alert.TempDataKey);
 
             return View(alerts);
         }

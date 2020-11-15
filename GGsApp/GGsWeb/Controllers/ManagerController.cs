@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GGsWeb.Features;
 using GGsWeb.Models;
 using GiantBomb.Api;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,11 @@ namespace GGsWeb.Controllers
         const string url = "https://localhost:44316/"; 
         private User user;
         private readonly IConfiguration config;
-        public ManagerController(IConfiguration configuration)
+        private readonly AlertService alertService;
+        public ManagerController(IConfiguration configuration, AlertService alertService)
         {
             config = configuration;
+            this.alertService = alertService;
         }
 
         /// <summary>
@@ -140,10 +143,11 @@ namespace GGsWeb.Controllers
                     if (result.IsSuccessStatusCode)
                     {
                         // TODO: Give Confirmation 
-
+                        alertService.Success("Successfully updated inventory item");
                         Log.Information($"Successfully updated inventory item: {json}");
                         return RedirectToAction("GetInventory", new { locationId = 1 });
                     }
+                    alertService.Danger("Something went wrong. Please try again");
                     Log.Error($"Unsuccessfully updated inventory item: {json}");
                 }
             }
@@ -272,12 +276,13 @@ namespace GGsWeb.Controllers
                         if (result.IsSuccessStatusCode)
                         {
                             // Successfully added inventory item
-                            // TODO: add confirmation message
+                            alertService.Success($"Successfully added {newVideoGame.name} to inventory");
                             return RedirectToAction("GetInventory", "Manager", new { locationId = user.locationId });
                         }
                     }
                 }
                 // Failed
+                alertService.Danger("Something went wrong");
                 return RedirectToAction("GetInventory", "Manager", user.locationId);
             }
         }
