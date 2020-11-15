@@ -1,3 +1,4 @@
+using GGsWeb.Features;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,8 @@ namespace GGsWeb
                     config.LoginPath = "/Home/Login";
                 });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<AlertService>();
+
             services.AddAuthorization();
             services.AddControllersWithViews();
 

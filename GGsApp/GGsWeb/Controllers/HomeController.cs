@@ -1,4 +1,5 @@
-﻿using GGsWeb.Models;
+﻿using GGsWeb.Features;
+using GGsWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
@@ -16,10 +17,12 @@ namespace GGsWeb.Controllers
     {
         private const string url = "https://localhost:44316/";
         private readonly ILogger<HomeController> _logger;
+        public AlertService alertService { get; }
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, AlertService alertService)
         {
             _logger = logger;
+            this.alertService = alertService;
         }
         /// <summary>
         /// Gets the Login View
@@ -73,12 +76,14 @@ namespace GGsWeb.Controllers
                             }
                         }
                         else
-                        {
+                        { 
+                            alertService.Danger("Invalid email or password. Please try again.", true);
                             Log.Error($"Unsuccessfuly login: {model}");
                             ModelState.AddModelError("Error", "Invalid information");
                             return View(model);
                         }
                     }
+                    alertService.Danger("Unable to reach server. Please try again.", true);
                 }
             }
             Log.Error($"ModelState was not valid: {ModelState}");
