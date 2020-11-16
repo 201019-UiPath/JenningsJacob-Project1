@@ -146,6 +146,7 @@ namespace GGsWeb.Controllers
                 }
             }
             Log.Error("Unable to create order");
+            alertService.Warning("Unable to complete order");
             return RedirectToAction("GetInventory", "Customer");
         }
 
