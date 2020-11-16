@@ -4,12 +4,11 @@
     ViewData["Title"] = "GetInventory";
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center text-white">
     <div class="col">
-        <h1>Manage Inventory</h1>
+        <h1 class="display-4">Manage Inventory</h1>
     </div>
-    
-    <div class="col align-bottom">
+    <div class="col align-self-center">
         <select class="form-control" id="locationId" asp-items="ViewBag.locationOptions" onchange="updateLocation(this.value)">
             <option value="">Choose a different location</option>
         </select>

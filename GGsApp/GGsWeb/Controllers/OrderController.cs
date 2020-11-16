@@ -1,4 +1,5 @@
-﻿using GGsWeb.Models;
+﻿using GGsWeb.Features;
+using GGsWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -16,6 +17,12 @@ namespace GGsWeb.Controllers
     {
         const string url = "https://localhost:44316/";
         private User user;
+
+        private AlertService alertService { get; }
+        public OrderController(AlertService alertService)
+        {
+            this.alertService = alertService;
+        }
 
         /// <summary>
         /// Generates the receipt of the order placed
@@ -132,12 +139,14 @@ namespace GGsWeb.Controllers
 
                         // Clear cart items and redirect to receipt view
                         user.cart.cartItems.Clear();
+                        user.cart.totalCost = 0;
                         HttpContext.Session.SetObject("User", user);
                         return RedirectToAction("Receipt", order);
                     }
                 }
             }
             Log.Error("Unable to create order");
+            alertService.Warning("Unable to complete order");
             return RedirectToAction("GetInventory", "Customer");
         }
 
@@ -153,14 +162,15 @@ namespace GGsWeb.Controllers
             {
                 new SelectListItem { Selected = false, Text = "Price (Lowest to Highest)", Value = ("cost_asc")},
                 new SelectListItem { Selected = false, Text = "Price (Highest to Lowest)", Value = ("cost_desc")},
-                new SelectListItem { Selected = false, Text = "Date (Lowest to Highest)", Value = ("date_asc")},
-                new SelectListItem { Selected = false, Text = "Date (Highest to Lowest)", Value = ("date_asc")}
+                new SelectListItem { Selected = false, Text = "Date (Oldest to Newest)", Value = ("date_asc")},
+                new SelectListItem { Selected = false, Text = "Date (Newest to Oldest)", Value = ("date_asc")}
             };
             ViewBag.Locations = new List<Location>();
             // Get User
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
             {
+                alertService.Warning("You must be logged in to view order history");
                 Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
             }

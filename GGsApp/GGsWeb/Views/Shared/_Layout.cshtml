@@ -19,7 +19,8 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        @*<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">*@
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm text-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Login">GGsWeb</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -39,7 +40,6 @@
     </header>
     <div class="container">
         <vc:alert></vc:alert>
-
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -47,7 +47,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2020 - GGsWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2020 - GGsWeb - <a href="https://www.giantbomb.com/api/">GiantBomb</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -37,6 +37,7 @@ namespace GGsWeb.Controllers
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
             {
+                alertService.Warning("You must be logged in to view inventory");
                 Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
             }
@@ -109,7 +110,7 @@ namespace GGsWeb.Controllers
                 HttpContext.Session.SetObject("User", user);
                 Log.Information($"Updated user session data: {user}");
                 alertService.Information($"{videoGame.name} added to cart!", true);
-                return View("GetInventory", user.location.inventory);
+                return RedirectToAction("GetInventory");
             }
             Log.Error($"ModelState was not valid: {ModelState}");
             return RedirectToAction("GetInventory");
@@ -158,6 +159,7 @@ namespace GGsWeb.Controllers
             Log.Information($"Attempting to get cart for: {user}");
             if (user == null)
             {
+                alertService.Warning("You must be logged in to view cart");
                 Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
             }
@@ -175,6 +177,7 @@ namespace GGsWeb.Controllers
             Log.Information($"Attempting to get information for: {user}");
             if (user == null)
             {
+                alertService.Warning("You must be logged in to edit user information");
                 Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
             }
@@ -222,8 +225,6 @@ namespace GGsWeb.Controllers
                 Log.Error("User session was not found");
                 return RedirectToAction("Login", "Home");
             }
-            if (ModelState.IsValid)
-            {
                 // Map newUser values
                 // User decided not to update password, keep it the same
                 if (newUser.password == null)
@@ -252,8 +253,6 @@ namespace GGsWeb.Controllers
                         alertService.Danger("Something went wrong");
                     }
                 }
-                return View("GetInventory");
-            }
             Log.Error($"ModelState was not valid: {ModelState}");
             return RedirectToAction("GetInventory");
         }

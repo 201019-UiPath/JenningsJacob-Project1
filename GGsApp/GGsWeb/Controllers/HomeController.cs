@@ -127,7 +127,20 @@ namespace GGsWeb.Controllers
                         var result = response.Result;
                         if (result.IsSuccessStatusCode)
                         {
-                            // Successful add
+                            // Successful add now get user back from db 
+                            response = client.GetAsync($"user/get?email={model.email}");
+                            response.Wait();
+
+                            result = response.Result;
+                            if (result.IsSuccessStatusCode)
+                            {
+                                var jsonString = result.Content.ReadAsStringAsync();
+                                jsonString.Wait();
+
+                                newUser = JsonConvert.DeserializeObject<User>(jsonString.Result);
+                            }
+
+
                             HttpContext.Session.SetObject("User", newUser);
                             Log.Information($"Successfully added user: {newUser}");
                             alertService.Success("Succesfully created account!", true);
@@ -141,7 +154,8 @@ namespace GGsWeb.Controllers
                     Log.Error("Unsuccesful sign up");
                 }
             }
-            return View(model);
+            alertService.Warning("Please fill in all the information");
+            return RedirectToAction("SignUp", model);
         }
 
         /// <summary>
@@ -179,6 +193,7 @@ namespace GGsWeb.Controllers
                 }
                 return View(model);
             }
+            
             Log.Error($"Model state is invalid: {ModelState.Values}");
             return View();
         }
