@@ -58,7 +58,7 @@ html {
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
-    background-image: url("../bg.jpg");
+    background-image: url("../bg-crop.jpg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -161,4 +161,18 @@ hr {
     height: 1px;
     background-color: white;
     border: none;
+}
+
+.modal-header {
+    background-color: #080808;
+}
+.modal-body {
+    background-color: #181818;
+}
+.modal-footer {
+    background-color: #080808;
+}
+
+.modal {
+    border-color: white;
 }

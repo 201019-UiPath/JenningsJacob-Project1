@@ -141,7 +141,8 @@ namespace GGsWeb.Controllers
                     Log.Error("Unsuccesful sign up");
                 }
             }
-            return View(model);
+            alertService.Warning("Please fill in all the information");
+            return RedirectToAction("SignUp", model);
         }
 
         /// <summary>
@@ -179,6 +180,7 @@ namespace GGsWeb.Controllers
                 }
                 return View(model);
             }
+            
             Log.Error($"Model state is invalid: {ModelState.Values}");
             return View();
         }

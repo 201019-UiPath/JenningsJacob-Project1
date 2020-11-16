@@ -17,18 +17,18 @@
 else
 {<a asp-action="GetInventory" asp-controller="Manager" asp-route-locationId="1">Back to List</a>}
 <hr />
-<div class="container">
+<div class="container text-white">
     <div class="row">
-        <div class="col-8">
+        <div class="col-6">
             <div class="media">
                 <img src="@Model.imageURL" alt="" class="img-fluid">
             </div>
         </div>
-        <div class="col-4">
-            <h3>@Html.DisplayFor(model => model.name)</h3>
-            <p>@Html.DisplayNameFor(model => model.platform): @Html.DisplayFor(model => model.platform)</p>
-            <p>@Html.DisplayNameFor(model => model.esrb): @Html.DisplayFor(model => model.esrb)</p>
-            <p>@Html.DisplayFor(model => model.cost)</p>
+        <div class="col-6 align-self-center">
+            <h3 class="display-4">@Html.DisplayFor(model => model.name)</h3>
+            <p><span class="text-muted">@Html.DisplayNameFor(model => model.platform):</span><span class=""> @Html.DisplayFor(model => model.platform)</span></p>
+            <p><span class="text-muted">@Html.DisplayNameFor(model => model.esrb):</span><span class=""> @Html.DisplayFor(model => model.esrb)</p>
+            <h1>@Html.DisplayFor(model => model.cost)</h1>
             @if (user.type == GGsWeb.Models.User.userType.Customer)
             {
         <div class="row">
@@ -50,5 +50,10 @@ else
         </div>
     </div>
     <hr />
-    @Html.Raw(Model.description)
+    <div class="background">
+        <div class="content">
+            @Html.Raw(Model.description)
+        </div>
+    </div>
+    
 </div>
