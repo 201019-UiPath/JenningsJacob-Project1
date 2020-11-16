@@ -8,14 +8,11 @@ a.navbar-brand {
 }
 
 /* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
-}
 
 .btn-primary {
-  color: #fff;
-  background-color: #de004e;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #de004e;
+    border-color: #de004e;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
@@ -59,9 +56,12 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-/*  background-color: #092047;*/
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    background-image: url("../bg.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 .footer {
   position: absolute;
@@ -72,12 +72,12 @@ body {
 }
 
 #cover {
-/*    background: #222 url('../Background.jpg') center center no-repeat;*/
+    /*    background: #222 url('../Background.jpg') center center no-repeat;*/
     background-size: cover;
     height: 100%;
     text-align: center;
     display: flex;
-/*    align-items: center;*/
+    /*    align-items: center;*/
     position: relative;
 }
 
@@ -102,14 +102,16 @@ form:before {
 
 
 .navbar {
-    background-color: #092047;
+    background-color: #321450;
+    background-image: url("../bg-nav.jpg");
+    background-position: center;
+    background-size: cover;
 }
 
 .card-columns {
     @include media-breakpoint-only(lg) {
         column-count: 4;
     }
-
     @include media-breakpoint-only(xl) {
         column-count: 5;
     }
@@ -126,11 +128,37 @@ form:before {
     width: 100%;
     height: 15vw;
     object-fit: contain;
-    background-color: #092047;
+    background-color: rgba(0,0,0, 0.25);
 }
+
+.card {
+    background-color: rgba(0,0,0, 0.75);
+    border-color: white;
+}
+
 .game-image {
     width: 100%;
     height: 15vw;
     object-fit: contain;
     background-color: #092047;
+}
+
+a {
+    color: #FDF800;
+}
+
+.btn-danger {
+    background-color: #FDF800;
+    border-color: #FDF800;
+    color: black;
+}
+
+.cart-card {
+    background-color: #000000 !important;
+}
+
+hr {
+    height: 1px;
+    background-color: white;
+    border: none;
 }

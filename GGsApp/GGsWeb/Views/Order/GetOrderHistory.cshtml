@@ -11,30 +11,30 @@
     ViewData["Title"] = "GetOrderHistory";
 }
 
-<div class="row justify-content-center">
-    <div class="col">
-        <h1>Order History</h1>
-    </div>
-    @if (user.type == GGsWeb.Models.User.userType.Manager)
-    {
-        <div class="btn-group justify-content-center mx-auto">
-            @foreach (var l in ViewBag.Locations)
+<div class="row text-white">
+            <div class="col">
+                <h1>Order History</h1>
+            </div>
+            @if (user.type == GGsWeb.Models.User.userType.Manager)
             {
-                <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("GetOrderHistory", "Order", new { sort = "cost_asc", locationId = l.id })'">@l.city</button>
+                <div class="btn-group justify-content-center mx-auto">
+                    @foreach (var l in ViewBag.Locations)
+                    {
+                        <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("GetOrderHistory", "Order", new { sort = "cost_asc", locationId = l.id })'">@l.city</button>
+                    }
+                </div>
             }
-        </div>
-    }
-    <div class="col justify-content-center">
-        <span class="float-right align-middle">
-            @Html.DropDownList("SortOrder", (IEnumerable<SelectListItem>)ViewBag.SortOptions, "Select Sorting Option", new { @onchange = "updateSort(this.value)" })
-        </span>
-    </div>
+            <div class="col">
+                <span class="float-right align-middle">
+                    @Html.DropDownList("SortOrder", (IEnumerable<SelectListItem>)ViewBag.SortOptions, "Select Sorting Option", new { @onchange = "updateSort(this.value)" })
+                </span>
+            </div>
 </div>
-<hr/>
+<hr />
 
 @foreach (var order in Model)
 {
-    <div class="container" style="margin-bottom: 8px">
+    <div class="container text-white" style="margin-bottom: 8px">
         @Html.Partial("OrderPartial", order)
     </div>
 }
