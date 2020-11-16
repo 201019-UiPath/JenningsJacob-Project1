@@ -57,38 +57,47 @@
     <div class="row">
         <div class="col-6">
             <div class="media">
-                <img src="@Model.imageURL" alt="" class="img-fluid">
+                <img src="@Model.videoGame.imageURL" alt="" class="img-fluid">
             </div>
         </div>
         <div class="col-6 align-self-center">
-            <h3 class="display-4">@Html.DisplayFor(model => model.name)</h3>
-            <p><span class="text-muted">@Html.DisplayNameFor(model => model.platform):</span><span class=""> @Html.DisplayFor(model => model.platform)</span></p>
-            <p><span class="text-muted">@Html.DisplayNameFor(model => model.esrb):</span><span class=""> @Html.DisplayFor(model => model.esrb)</p>
-            <h1>@Html.DisplayFor(model => model.cost)</h1>
-            @if (user.type == GGsWeb.Models.User.userType.Customer)
-            {
+            <h3 class="display-4">@Html.DisplayFor(model => model.videoGame.name)</h3>
+            <p><span class="text-muted">@Html.DisplayNameFor(model => model.videoGame.platform):</span><span class=""> @Html.DisplayFor(model => model.videoGame.platform)</span></p>
+            <span><span class="text-muted">@Html.DisplayNameFor(model => model.videoGame.esrb):</span><span class=""> @Html.DisplayFor(model => model.videoGame.esrb)</span>
+            <h1>@Html.DisplayFor(model => model.videoGame.cost)</h1>
                 <div class="row">
-                    <form class="form-inline" asp-action="AddItemToCart" asp-controller="Customer" asp-route-quantity="quantity" asp-route-videoGameId="@Model.id">
+                    <form class="form-inline" asp-action="EditInventoryItem">
                         <div class="form-group input-group">
+                            <div class="form-group" hidden="hidden">
+                                <label asp-for="id" class="control-label"></label>
+                                <input asp-for="id" class="form-control" />
+                                <span asp-validation-for="id" class="text-danger"></span>
+                            </div>
+                            <div class="form-group" hidden="hidden">
+                                <label asp-for="videoGameId" class="control-label"></label>
+                                <input asp-for="videoGameId" class="form-control" />
+                                <span asp-validation-for="videoGameId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group" hidden="hidden">
+                                <label asp-for="locationId" class="control-label"></label>
+                                <input asp-for="locationId" class="form-control" />
+                                <span asp-validation-for="locationId" class="text-danger"></span>
+                            </div>
                             <div class="col">
                                 <span>
-                                    <select name="quantity" class="form-control" for="quantity" asp-items="ViewBag.QuantityOptions"></select>
-                                    <button class="btn btn-primary" type="submit">Add To Cart</button>
+                                    <input asp-for="quantity" class="form-control" />
+                                    <button class="btn btn-primary" type="submit">Update Inventory</button>
                                 </span>
                             </div>
                         </div>
                     </form>
                 </div>
-            }
-            else
-            {<button class="btn btn-primary">Manage Inventory</button>}
-
         </div>
     </div>
     <hr />
     <div class="background">
         <div class="content">
-            @Html.Raw(Model.description)
+            @Html.Raw(Model.videoGame.description)
         </div>
     </div>
 </div>

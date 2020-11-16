@@ -64,11 +64,15 @@ body {
     background-size: cover;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    background-color: #321450;
+    background-image: url("../bg-nav.jpg");
+    background-position: center;
+    background-size: cover;
+    line-height: 60px; /* Vertically center the text there */
 }
 
 #cover {
