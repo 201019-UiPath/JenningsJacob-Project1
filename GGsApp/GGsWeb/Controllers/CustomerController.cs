@@ -121,9 +121,10 @@ namespace GGsWeb.Controllers
         /// </summary>
         /// <param name="videoGame">Video game object you wish to remove</param>
         /// <returns>Redirect to GetCart action</returns>
-        public IActionResult RemoveItemFromCart(VideoGame videoGame)
+        public IActionResult RemoveItemFromCart(int videoGameId)
         {
-            Log.Information($"Attempting to remove item from cart: {videoGame.id}");
+            VideoGame vg = new VideoGame();
+            Log.Information($"Attempting to remove item from cart: {videoGameId}");
             user = HttpContext.Session.GetObject<User>("User");
             if (user == null)
             {
@@ -132,18 +133,37 @@ namespace GGsWeb.Controllers
             }
             if (ModelState.IsValid)
             {
-                CartItem item = new CartItem()
+                using (var client = new HttpClient())
                 {
-                    videoGameId = videoGame.id,
-                    videoGame = videoGame,
-                    quantity = 1
-                };
-                user.cart.cartItems.RemoveAll(x => x.videoGameId == item.videoGameId);
-                user.cart.totalCost -= (videoGame.cost * item.quantity);
-                HttpContext.Session.SetObject("User", user);
-                Log.Information($"Successfully removed item form cart: {videoGame.id}");
-                Log.Information($"Updated user session data: {user}");
-                return RedirectToAction("GetCart");
+                    client.BaseAddress = new Uri(url);
+                    var response = client.GetAsync($"videogame/get?id={videoGameId}");
+                    response.Wait();
+
+                    var result = response.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var jsonString = result.Content.ReadAsStringAsync();
+                        jsonString.Wait();
+
+                        Log.Information($"Successfully got videogame: {videoGameId}");
+
+                       vg = JsonConvert.DeserializeObject<VideoGame>(jsonString.Result);
+                        CartItem item = new CartItem()
+                        {
+                            videoGameId = videoGameId,
+                            videoGame = vg,
+                            quantity = 1
+                        };
+                        user.cart.cartItems.RemoveAll(x => x.videoGameId == item.videoGameId);
+                        user.cart.totalCost -= (vg.cost * item.quantity);
+                        HttpContext.Session.SetObject("User", user);
+                        Log.Information($"Successfully removed item form cart: {videoGameId}");
+                        Log.Information($"Updated user session data: {user}");
+                        return RedirectToAction("GetCart");
+                    }
+                }
+
+                
             }
             Log.Error($"ModelState was not valid: {ModelState}");
             return RedirectToAction("GetInventory");

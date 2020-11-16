@@ -6,7 +6,7 @@
 <div class="card cart-card">
     <div class="card-body">
         <h5 class="card-title">@Html.DisplayFor(model => model.videoGame.name)</h5>
-        <button class="btn btn-danger float-right" onclick="location.href='@Url.Action("RemoveItemFromCart", "Customer", Model.videoGame)'">Delete</button>
+        <button class="btn btn-danger float-right" onclick="location.href='@Url.Action("RemoveItemFromCart", "Customer", new { videoGameId = Model.videoGameId })'">Delete</button>
         <div class="container">
             <div class="row">
                 <div class="col">

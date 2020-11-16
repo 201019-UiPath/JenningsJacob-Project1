@@ -45,7 +45,7 @@ else
         </div>
             }
             else
-            {<button class="btn btn-primary">Manage Inventory</button>}
+            {<button class="btn btn-primary text-white" onclick="location.href='@Url.Action("EditInventoryItem", "Manager", new { locationId = user.locationId, videoGameId = Model.id })'">Manage Stock</button>}
             
         </div>
     </div>

@@ -182,5 +182,10 @@ hr {
 }
 
 .btn-primary:hover {
+    background-color: #9b0037;
+    border-color: #9b0037;
+}
 
+a:hover {
+    color: #cac600;
 }
